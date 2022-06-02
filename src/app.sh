@@ -1,7 +1,9 @@
-{
+#! /bin/bash
+rm appsettings.Development.json 
+echo '{
   "ConnectionStrings": {
-    "ChessDb": "Server=mssql, 1433; Database=Chess; User ID=sa; Password=p@ssw0rd"
-},
+    "ChessDb": "Server='${HOST}', 1433; Database=Chess; User ID=sa; Password='${PASSWORD}'"' >> appsettings.Development.json
+echo '},
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -14,4 +16,6 @@
     "MyAbvMail": "psp87@abv.bg",
     "MyGmail": "pspetrov1987@gmail.com"
   }
-}
+}' >> appsettings.Development.json
+ 
+
