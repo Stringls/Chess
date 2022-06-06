@@ -3,6 +3,7 @@ node {
     
     stage('Clone Repository') {
         /* Checkout our repository */
+        sh 'echo "${BUILD_USER}"'
         checkout scm
     }
     
