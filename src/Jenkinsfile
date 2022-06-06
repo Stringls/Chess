@@ -13,12 +13,12 @@ node {
         }
     }
     
-#    stage('Test Image') {
-#        app.inside {
-#            sh 'echo "Tests Passed"'
-#        }
-#    }
-    
+/*    stage('Test Image') {
+        app.inside {
+            sh 'echo "Tests Passed"'
+        }
+    }
+*/    
     stage('Push Image') {
         /* Push images: First is tagged with the build BUILD_NUMBER
         the second is just tagged latest !*/
