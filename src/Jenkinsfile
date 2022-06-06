@@ -30,10 +30,10 @@ node {
     
     stage('Deploy to K8s') {
         /* Apply all manifest files */
-        dir('~') {
+        dir('minikube') {
             /* sh "kubectl apply -f ./minikube/" */
-            sh "kubectl apply -f ./minikube/service.yaml"
-            sh "kubectl apply -f ./miniube/app.yaml"
+            sh "kubectl apply -f mssql.yaml"
+            sh "kubectl apply -f app.yaml"
         }
     }
 }
