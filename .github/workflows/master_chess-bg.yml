@@ -25,12 +25,15 @@ jobs:
 
     - name: Restore
       run: dotnet restore
+      working-directory: src
 
     - name: Build
       run: dotnet build --no-restore -c Release
+      working-directory: src
 
     - name: Publish
       run: dotnet publish --no-build -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      working-directory: src
 
     - name: 'Deploy to Azure WebApp'
       uses: azure/webapps-deploy@v2
