@@ -7,7 +7,7 @@ on: [push, workflow_dispatch]
 
 env:
   AZURE_WEBAPP_NAME: chess-app
-  AZURE_WEBAPP_PACKAGE_PATH: './published'
+  AZURE_WEBAPP_PACKAGE_PATH: './src/published'
   NETCORE_VERSION: '6.0.300'
 
 jobs:
