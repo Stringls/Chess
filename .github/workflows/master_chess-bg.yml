@@ -7,7 +7,7 @@ on: [push, workflow_dispatch]
 
 env:
   AZURE_WEBAPP_NAME: chess-app
-  AZURE_WEBAPP_PACKAGE_PATH: './published'
+#  AZURE_WEBAPP_PACKAGE_PATH: './published'
   NETCORE_VERSION: '6.0.300'
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
       working-directory: src
 
     - name: Publish
-      run: dotnet publish --no-build -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      run: dotnet publish --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
       working-directory: src
 
 #    - name: 'Deploy to Azure WebApp'
@@ -43,10 +43,10 @@ jobs:
 #        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
     - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v2
       with:
         name: .net-app
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        path: ${{ env.DOTNET_ROOT }}/myapp
     
   deploy:
     runs-on: ubuntu-latest
