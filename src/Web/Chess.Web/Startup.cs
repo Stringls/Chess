@@ -99,8 +99,9 @@
 
         private void AddDatabase(IServiceCollection services)
         {
-            services.AddDbContext<ChessDbContext>(options => options
-                .UseSqlServer(this.configuration.GetChessDbConnectionString()));
+            services.AddDbContext<ChessDbContext>(options => options.UseSqlServer(
+                    this.configuration.GetChessDbConnectionString(),
+                    options => options.EnableRetryOnFailure()));
         }
 
         private void AddIdentity(IServiceCollection services)
