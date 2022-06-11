@@ -6,7 +6,7 @@ name: Azure Pipeline
 on: [push, workflow_dispatch]
 
 env:
-  AZURE_WEBAPP_NAME: chess-app
+  AZURE_WEBAPP_NAME: chess-web-app
 #  AZURE_WEBAPP_PACKAGE_PATH: './published'
   NETCORE_VERSION: '6.0.300'
 
@@ -65,7 +65,7 @@ jobs:
       id: deploy-to-webapp
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'chess-app'
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
         slot-name: 'Production'
         publish-profile: ${{ secrets.AZURE_APPSERVICE_PUBLISH_PROFILE }}
         package: .
