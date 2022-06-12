@@ -1,1 +1,5 @@
 project_name = "chess"
+resource_group_name = ".net_chess_project"
+resource_group_location = "North Europe"
+sql_admin_login = "stringls"
+repository_url = "https://github.com/Stringls/Chess"

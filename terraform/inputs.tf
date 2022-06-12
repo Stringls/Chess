@@ -6,13 +6,11 @@ variable "project_name" {
 variable "resource_group_name" {
   type        = string
   description = "Resource Group name"
-  default     = ".net_chess_project"
 }
 
 variable "resource_group_location" {
   type        = string
   description = "Resource Group location"
-  default     = "North Europe"
 }
 
 variable "sql_database_name" {
@@ -24,7 +22,6 @@ variable "sql_database_name" {
 variable "sql_admin_login" {
   type        = string
   description = "SQL Server login name in Azure"
-  default     = "stringls"
 }
 
 variable "sql_admin_password" {
@@ -78,7 +75,6 @@ variable "sa_mounth_path" {
 variable "repository_url" {
   type        = string
   description = "Repo url for App Service"
-  default     = "https://github.com/Stringls/Chess"
 }
 
 variable "branch_pointer" {
