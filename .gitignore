@@ -358,7 +358,7 @@ MigrationBackup/
 appsettings.Production.json
 *.min.js
 
-# Terraform artifacts
+# Terraform output files
 tfplan
 .terraform*
-terraform.tfstate
+*.tfstate.*
