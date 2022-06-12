@@ -6,7 +6,7 @@ name: Azure Pipeline
 on: [push, workflow_dispatch]
 
 env:
-  AZURE_WEBAPP_NAME: chess-web-app
+  AZURE_WEBAPP_NAME: chess-web-app-libkvm
 #  AZURE_WEBAPP_PACKAGE_PATH: './published'
   NETCORE_VERSION: '6.0.300'
 
