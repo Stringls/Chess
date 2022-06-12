@@ -361,4 +361,5 @@ appsettings.Production.json
 # Terraform output files
 tfplan
 .terraform*
+*.tfstate
 *.tfstate.*
