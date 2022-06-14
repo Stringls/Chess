@@ -1,3 +1,9 @@
+variable "env" {
+  type = string
+  description = "Type of Project Environmet"
+  default = "prod"
+}
+
 variable "project_name" {
   type        = string
   description = "The name of the application"
