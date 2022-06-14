@@ -24,6 +24,7 @@ provider "azurerm" {
 module "naming" {
   source  = "Azure/naming/azurerm"
   version = "0.1.1"
+  prefix  = ["${var.project_name}"]
 }
 
 ##################################
@@ -43,26 +44,12 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
-#####################################
-# random string for naming resources
-#####################################
-
-resource "random_string" "suffix" {
-  length  = 6
-  special = false
-  upper   = false
-}
-
-locals {
-  project_name = lower(var.project_name)
-}
-
 ###################
 # storage account
 ###################
 
 resource "azurerm_storage_account" "sa" {
-  name                     = "${local.project_name}storage${random_string.suffix.result}"
+  name                     = module.naming.storage_account.name_unique
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -76,7 +63,7 @@ resource "azurerm_storage_account" "sa" {
 }
 
 resource "azurerm_storage_share" "sashare" {
-  name                 = "${local.project_name}-sashare-${random_string.suffix.result}"
+  name                 = module.naming.storage_share.name_unique
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 50
 }
@@ -86,12 +73,12 @@ resource "azurerm_storage_share" "sashare" {
 #############################
 
 resource "azurerm_mssql_server" "sqldb" {
-  name                         = "${local.project_name}-sql-${random_string.suffix.result}"
+  name                         = module.naming.mssql_server.name_unique
   resource_group_name          = azurerm_resource_group.rg.name
   location                     = azurerm_resource_group.rg.location
   version                      = "12.0"
   administrator_login          = var.sql_admin_login
-  administrator_login_password = var.sql_admin_password
+  administrator_login_password = azurerm_key_vault_secret.kv_secret.value
 
   tags = {
     environment = var.env
@@ -134,7 +121,7 @@ resource "azurerm_mssql_database_extended_auditing_policy" "db_policy" {
 ########################
 
 resource "azurerm_key_vault" "kv" {
-  name                = "${local.project_name}-kv-${random_string.suffix.result}"
+  name                = module.naming.key_vault.name_unique
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   tenant_id           = data.azurerm_client_config.config.tenant_id
@@ -176,7 +163,7 @@ resource "azurerm_key_vault_secret" "kv_secret" {
 ########################
 
 resource "azurerm_service_plan" "app_plan" {
-  name                = "${local.project_name}-app-service-plan-${random_string.suffix.result}"
+  name                = module.naming.app_service_plan.name_unique
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   os_type             = "Linux"
@@ -190,7 +177,7 @@ resource "azurerm_service_plan" "app_plan" {
 }
 
 resource "azurerm_linux_web_app" "webapp" {
-  name                = "${local.project_name}-web-app-${random_string.suffix.result}"
+  name                = module.naming.app_service.name_unique
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_plan.id
