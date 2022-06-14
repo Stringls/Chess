@@ -1,9 +1,3 @@
-variable "env" {
-  type = string
-  description = "Type of Project Environmet"
-  default = "prod"
-}
-
 variable "project_name" {
   type        = string
   description = "The name of the application"
@@ -46,6 +40,12 @@ variable "sql_size" {
   type        = string
   description = "The SQL Server database size"
   default     = "Basic"
+}
+
+variable "kv_sku_name" {
+  type        = string
+  description = "The Name of the SKU used for this Key Vault"
+  default     = "standard"
 }
 
 variable "web_app_sku_name" {
