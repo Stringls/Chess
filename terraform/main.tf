@@ -27,11 +27,17 @@ data "azurerm_client_config" "config" {}
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.resource_group_location
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
 
-################################################
-# random string for web app and database server
-################################################
+#####################################
+# random string for naming resources
+#####################################
 
 resource "random_string" "suffix" {
   length  = 6
@@ -43,9 +49,9 @@ locals {
   project_name = lower(var.project_name)
 }
 
-########################
-# storage
-########################
+###################
+# storage account
+###################
 
 resource "azurerm_storage_account" "sa" {
   name                     = "${local.project_name}storage${random_string.suffix.result}"
@@ -55,7 +61,9 @@ resource "azurerm_storage_account" "sa" {
   account_replication_type = "LRS"
 
   tags = {
-    environment = "prod"
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
   }
 }
 
@@ -63,6 +71,12 @@ resource "azurerm_storage_share" "sashare" {
   name                 = "${local.project_name}-sashare-${random_string.suffix.result}"
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 50
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
 
 #############################
@@ -76,6 +90,12 @@ resource "azurerm_mssql_server" "sqldb" {
   version                      = "12.0"
   administrator_login          = var.sql_admin_login
   administrator_login_password = var.sql_admin_password
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  } 
 }
 
 resource "azurerm_mssql_database" "db" {
@@ -84,6 +104,12 @@ resource "azurerm_mssql_database" "db" {
   collation   = "SQL_Latin1_General_CP1_CI_AS"
   max_size_gb = var.max_size_gb
   sku_name    = var.sql_size
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
 
 resource "azurerm_mssql_firewall_rule" "allow_all_azure_ips" {
@@ -129,6 +155,12 @@ resource "azurerm_key_vault" "kv" {
       "Recover"
     ]
   }
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
 
 resource "azurerm_key_vault_secret" "kv_secret" {
@@ -147,6 +179,12 @@ resource "azurerm_service_plan" "app_plan" {
   resource_group_name = azurerm_resource_group.rg.name
   os_type             = "Linux"
   sku_name            = var.web_app_sku_name
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
 
 resource "azurerm_linux_web_app" "webapp" {
@@ -182,6 +220,12 @@ resource "azurerm_linux_web_app" "webapp" {
     share_name   = azurerm_storage_share.sashare.name
     mount_path   = var.sa_mounth_path # /home/site/wwwroot/wp-content
   }
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
 
 ####################################
@@ -192,4 +236,10 @@ resource "azurerm_app_service_source_control" "scm" {
   app_id   = azurerm_linux_web_app.webapp.id
   repo_url = var.repository_url
   branch   = var.branch_pointer
+
+  tags {
+    environment = var.env
+    managedBy = terraform
+    gitrepo = var.repo_url
+  }
 }
