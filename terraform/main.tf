@@ -5,11 +5,24 @@ terraform {
       version = "=3.9.0"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name = azurerm_resource_group.rg.name
+    storage_account_name = azurerm_storage_account.sa.name
+    container_name = "tfstate"
+    key = "${var.env}.terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }
+
+data "azurerm_client_config" "config" {}
 
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
@@ -86,6 +99,42 @@ resource "azurerm_mssql_database_extended_auditing_policy" "db_policy" {
   storage_account_access_key              = azurerm_storage_account.sa.primary_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = 6
+}
+
+########################
+# key vault secret
+########################
+
+resource "azurerm_key_vault" "kv" {
+  name = "${local.project_name}-kv-${random_string.suffix.result}"
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  tenant_id = data.azurerm_client_config.config.tenant_id
+  sku_name = var.kv_sku_name
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.config.tenant_id
+    object_id = data.azurerm_client_config.config.object_id
+
+    key_permissions = [
+      "Create",
+      "Get",
+    ]
+
+    secret_permissions = [
+      "Set",
+      "Get",
+      "Delete",
+      "Purge",
+      "Recover"
+    ]
+  }
+}
+
+resource "azurerm_key_vault_secret" "kv_secret" {
+  name = "sql-admin-password"
+  value = var.sql_admin_password
+  key_vault_id = azurerm_key_vault.kv.id
 }
 
 ########################
