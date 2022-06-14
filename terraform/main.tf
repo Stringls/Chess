@@ -6,12 +6,7 @@ terraform {
     }
   }
 
-  backend "azurerm" {
-    resource_group_name = azurerm_resource_group.rg.name
-    storage_account_name = azurerm_storage_account.sa.name
-    container_name = "tfstate"
-    key = "${var.env}.terraform.tfstate"
-  }
+  backend "azurerm" {}
 }
 
 provider "azurerm" {
@@ -22,16 +17,29 @@ provider "azurerm" {
   }
 }
 
+##############################
+# module for naming resources
+##############################
+
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  version = "0.1.1"
+}
+
+##################################
+# resources group + client config
+##################################
+
 data "azurerm_client_config" "config" {}
 
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.resource_group_location
 
-  tags {
+  tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
   }
 }
 
@@ -62,8 +70,8 @@ resource "azurerm_storage_account" "sa" {
 
   tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
   }
 }
 
@@ -71,12 +79,6 @@ resource "azurerm_storage_share" "sashare" {
   name                 = "${local.project_name}-sashare-${random_string.suffix.result}"
   storage_account_name = azurerm_storage_account.sa.name
   quota                = 50
-
-  tags {
-    environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
-  }
 }
 
 #############################
@@ -91,11 +93,11 @@ resource "azurerm_mssql_server" "sqldb" {
   administrator_login          = var.sql_admin_login
   administrator_login_password = var.sql_admin_password
 
-  tags {
+  tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
-  } 
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
+  }
 }
 
 resource "azurerm_mssql_database" "db" {
@@ -105,10 +107,10 @@ resource "azurerm_mssql_database" "db" {
   max_size_gb = var.max_size_gb
   sku_name    = var.sql_size
 
-  tags {
+  tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
   }
 }
 
@@ -132,11 +134,11 @@ resource "azurerm_mssql_database_extended_auditing_policy" "db_policy" {
 ########################
 
 resource "azurerm_key_vault" "kv" {
-  name = "${local.project_name}-kv-${random_string.suffix.result}"
-  location = azurerm_resource_group.rg.location
+  name                = "${local.project_name}-kv-${random_string.suffix.result}"
+  location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  tenant_id = data.azurerm_client_config.config.tenant_id
-  sku_name = var.kv_sku_name
+  tenant_id           = data.azurerm_client_config.config.tenant_id
+  sku_name            = var.kv_sku_name
 
   access_policy {
     tenant_id = data.azurerm_client_config.config.tenant_id
@@ -156,16 +158,16 @@ resource "azurerm_key_vault" "kv" {
     ]
   }
 
-  tags {
+  tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
   }
 }
 
 resource "azurerm_key_vault_secret" "kv_secret" {
-  name = "sql-admin-password"
-  value = var.sql_admin_password
+  name         = "sql-admin-password"
+  value        = var.sql_admin_password
   key_vault_id = azurerm_key_vault.kv.id
 }
 
@@ -180,10 +182,10 @@ resource "azurerm_service_plan" "app_plan" {
   os_type             = "Linux"
   sku_name            = var.web_app_sku_name
 
-  tags {
+  tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
   }
 }
 
@@ -221,10 +223,10 @@ resource "azurerm_linux_web_app" "webapp" {
     mount_path   = var.sa_mounth_path # /home/site/wwwroot/wp-content
   }
 
-  tags {
+  tags = {
     environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
+    managedBy   = "terraform"
+    gitrepo     = var.repository_url
   }
 }
 
@@ -236,10 +238,4 @@ resource "azurerm_app_service_source_control" "scm" {
   app_id   = azurerm_linux_web_app.webapp.id
   repo_url = var.repository_url
   branch   = var.branch_pointer
-
-  tags {
-    environment = var.env
-    managedBy = terraform
-    gitrepo = var.repo_url
-  }
 }
