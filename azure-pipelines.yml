@@ -36,7 +36,7 @@ jobs:
     - task: TerraformCLI@0
       inputs:
         command: 'init'
-#        workingDirectory: '$(workingDirectory)'
+        workingDirectory: '$(workingDirectory)'
         backendType: 'azurerm'
         backendServiceArm: 'Azure DevOps'
         ensureBackend: true
