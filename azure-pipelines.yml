@@ -18,11 +18,11 @@ trigger:
     - main
 
 jobs:
-  - job: AzureLogin
-    steps:
-    - task: CmdLine@2
-      inputs:
-        script: 'az login'
+#  - job: AzureLogin
+#    steps:
+#    - task: CmdLine@2
+#      inputs:
+#        script: 'az login'
 
 
   - job: TerraformCommands
@@ -30,30 +30,41 @@ jobs:
 
     # Install Terraform
     - task: TerraformInstaller@0
-      displayName: Install Terraform
       inputs:
         terraformVersion: 'latest'
-    
+      
     # Init
     - task: TerraformCLI@0
-      displayName: Initialize Terraform
       inputs:
         command: 'init'
-        workingDirectory: '$(workingDirectory)/terraform'
-        commandOptions: '-backend-config=config.azurerm.tfbackend'
         backendType: 'azurerm'
+        backendServiceArm: 'Azure DevOps'
+        ensureBackend: true
+        backendAzureRmResourceGroupName: '$(ResourceGroupName)'
+        backendAzureRmResourceGroupLocation: '$(ResourceGroupLocation)'
+        backendAzureRmStorageAccountName: '$(StorageAccountName)'
+        backendAzureRmContainerName: '$(ContainerName)'
+        backendAzureRmKey: '$(Key)'
+        allowTelemetryCollection: true
+
+    # Validate
+    - task: TerraformCLI@0
+      inputs:
+        command: 'validate'
+        allowTelemetryCollection: true
 
     # Plan
     - task: TerraformCLI@0
-      displayName: Plan Terrafrom Deployment
       inputs:
         command: 'plan'
-        workingDirectory: '$(workingDirectory)/terraform'
-        commandOptions: '-var "sql_admin_password=$(sql-admin-password)" -o tfplan'
+        environmentServiceName: 'Azure DevOps'
+        commandOptions: '-var "sql_admin_password=$(secret_password)"'
+        allowTelemetryCollection: true
 
     # Apply
     - task: TerraformCLI@0
-      displayName: Apply Terraform Deployment Plan
       inputs:
         command: 'apply'
-        workingDirectory: '$(workingDirectory)/terraform'
+        environmentServiceName: 'Azure DevOps'
+        commandOptions: '-var "sql_admin_password=$(secret_password)"'
+        allowTelemetryCollection: true
