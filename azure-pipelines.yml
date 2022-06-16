@@ -22,7 +22,7 @@ jobs:
     steps:
     - task: CmdLine@2
       inputs:
-        script: 'az login -u $(username) -p $(very_secret_pass)'
+        script: 'az login -u $(username) -p $(very-secret-pass)'
         displayName: Login in the process
 
 
@@ -50,7 +50,7 @@ jobs:
       inputs:
         command: 'plan'
         workingDirectory: '$(workingDirectory)/terraform'
-        commandOption: '-var "sql_admin_password=$(sql_admin_password)" -o tfplan'
+        commandOption: '-var "sql_admin_password=$(sql-admin-password)" -o tfplan'
 
     # Apply
     - task: TerraformCLI@0
