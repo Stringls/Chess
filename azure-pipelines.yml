@@ -91,9 +91,10 @@ jobs:
       displayName: 'dotnet restore'
       inputs:
         command: 'restore'
+        projects: '**/*.csproj'
         workingDirectory: '$(workDir)/src'
         feedsToUse: 'select'
-    
+
     # Build 
     - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
@@ -102,7 +103,9 @@ jobs:
         arguments: '--no-restore -c $(buildConfiguration)'
         workingDirectory: '$(workDir)/src'
     
+    # Run Tests
     - task: DotNetCoreCLI@2
+      displayName: dotnet test
       inputs:
         command: 'test'
         arguments: '-c $(buildConfiguration)'
