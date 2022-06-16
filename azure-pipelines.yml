@@ -10,7 +10,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+  workDir: '$(System.DefaultWorkingDirectory)'
 
 trigger:
   branches:
@@ -38,7 +38,7 @@ jobs:
       displayName: Terraform Init
       inputs:
         command: 'init'
-        workingDirectory: '$(workingDirectory)'
+        workingDirectory: '$(workDir)/terraform'
         backendType: 'azurerm'
         backendServiceArm: 'Azure DevOps'
         ensureBackend: true
@@ -54,7 +54,7 @@ jobs:
       displayName: Terraform Validate
       inputs:
         command: 'validate'
-        workingDirectory: '$(workingDirectory)'
+        workingDirectory: '$(workDir)/terraform'
         allowTelemetryCollection: true
 
     # Plan
@@ -62,7 +62,7 @@ jobs:
       displayName: Terraform Plan
       inputs:
         command: 'plan'
-        workingDirectory: '$(workingDirectory)'
+        workingDirectory: '$(workDir)/terraform'
         environmentServiceName: 'Azure DevOps'
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
@@ -72,7 +72,7 @@ jobs:
       displayName: Terraform Apply
       inputs:
         command: 'apply'
-        workingDirectory: '$(workingDirectory)'
+        workingDirectory: '$(workDir)/terraform'
         environmentServiceName: 'Azure DevOps'
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
@@ -91,7 +91,7 @@ jobs:
       displayName: 'dotnet restore'
       inputs:
         command: 'restore'
-        workingDirectory: 'src'
+        workingDirectory: '$(workDir)/src'
         feedsToUse: 'select'
     
     # Build 
@@ -100,10 +100,10 @@ jobs:
       inputs:
         command: 'build'
         arguments: '--no-restore -c $(buildConfiguration)'
-        workingDirectory: 'src'
+        workingDirectory: '$(workDir)/src'
     
     - task: DotNetCoreCLI@2
       inputs:
         command: 'test'
         arguments: '-c $(buildConfiguration)'
-        workingDirectory: 'src'
+        workingDirectory: '$(workDir)/src'
