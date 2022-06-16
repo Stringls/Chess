@@ -10,7 +10,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-and-Dotnet-CI/.net-app/terraform'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
 
 trigger:
   branches:
@@ -23,7 +23,6 @@ jobs:
 #    - task: CmdLine@2
 #      inputs:
 #        script: 'az login'
-
 
   - job: TerraformCommands
     steps:
