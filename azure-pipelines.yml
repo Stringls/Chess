@@ -76,6 +76,14 @@ jobs:
         environmentServiceName: 'Azure DevOps'
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
+    
+    # Output the name of web app
+    - task: TerraformCLI@0
+      displayName: Terraform Output
+      inputs:
+        command: 'output'
+        workingDirectory: '$(workDir)/terraform'
+        allowTelemetryCollection: true
   
   
   - job: Build_Test_Deploy
@@ -110,3 +118,26 @@ jobs:
         command: 'test'
         arguments: '-c $(buildConfiguration)'
         workingDirectory: '$(workDir)/src'
+    
+    # Publish Artifact
+    - task: DotNetCoreCLI@2
+      displayName: dotnet publish
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--no-build -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+        workingDirectory: '$(workDir)/src'
+  
+  - job: Deploy_Web_App
+    steps:
+    
+    # Upload the artifact to a web application
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure DevOps'
+        appType: 'webAppLinux'
+        WebAppName: '$(WebAppName)'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        ScriptType: 'Inline Script'
+        InlineScript: 'curl $(WebAppURL)'
