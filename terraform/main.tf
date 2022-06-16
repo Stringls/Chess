@@ -221,8 +221,8 @@ resource "azurerm_linux_web_app" "webapp" {
 # source control for linux web app
 ####################################
 
-resource "azurerm_app_service_source_control" "scm" {
-  app_id   = azurerm_linux_web_app.webapp.id
-  repo_url = var.repository_url
-  branch   = var.branch_pointer
-}
+#resource "azurerm_app_service_source_control" "scm" {
+#  app_id   = azurerm_linux_web_app.webapp.id
+#  repo_url = var.repository_url
+#  branch   = var.branch_pointer
+#}
