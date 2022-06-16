@@ -18,15 +18,14 @@ trigger:
     - main
 
 jobs:
-  - job: azure login
+  - job: azure-login
     steps:
     - task: CmdLine@2
       inputs:
         script: 'az login -u $(username) -p $(very-secret-pass)'
-        displayName: Login in the process
 
 
-  - job: terraform commands
+  - job: terraform-commands
     steps:
 
     # Install Terraform
@@ -50,11 +49,11 @@ jobs:
       inputs:
         command: 'plan'
         workingDirectory: '$(workingDirectory)/terraform'
-        commandOption: '-var "sql_admin_password=$(sql-admin-password)" -o tfplan'
+        commandOptions: '-var "sql_admin_password=$(sql-admin-password)" -o tfplan'
 
     # Apply
     - task: TerraformCLI@0
       displayName: Apply Terraform Deployment Plan
       inputs:
-        command: 'apply tfplan'
+        command: 'apply'
         workingDirectory: '$(workingDirectory)/terraform'
