@@ -18,14 +18,14 @@ trigger:
     - main
 
 jobs:
-  - job: azure-login
+  - job: Azure Login
     steps:
     - task: CmdLine@2
       inputs:
         script: 'az login -u $(username) -p $(very-secret-pass)'
 
 
-  - job: terraform-commands
+  - job: Terraform Commands
     steps:
 
     # Install Terraform
