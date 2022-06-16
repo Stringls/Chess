@@ -22,7 +22,7 @@ jobs:
     steps:
     - task: CmdLine@2
       inputs:
-        script: 'az login -u $(username) -p $(very-secret-pass)'
+        script: 'az login'
 
 
   - job: TerraformCommands
