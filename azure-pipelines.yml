@@ -10,7 +10,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  workingDirectory: '$(System.DefaultWorkingDirectory)/src'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/_Terraform-and-Dotnet-CI/.net-app/terraform'
 
 trigger:
   branches:
@@ -37,6 +37,7 @@ jobs:
     - task: TerraformCLI@0
       inputs:
         command: 'init'
+        workingDirectory: '$(workingDirectory)'
         backendType: 'azurerm'
         backendServiceArm: 'Azure DevOps'
         ensureBackend: true
@@ -51,12 +52,14 @@ jobs:
     - task: TerraformCLI@0
       inputs:
         command: 'validate'
+        workingDirectory: '$(workingDirectory)'
         allowTelemetryCollection: true
 
     # Plan
     - task: TerraformCLI@0
       inputs:
         command: 'plan'
+        workingDirectory: '$(workingDirectory)'
         environmentServiceName: 'Azure DevOps'
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
@@ -65,6 +68,7 @@ jobs:
     - task: TerraformCLI@0
       inputs:
         command: 'apply'
+        workingDirectory: '$(workingDirectory)'
         environmentServiceName: 'Azure DevOps'
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
