@@ -71,12 +71,12 @@ jobs:
         allowTelemetryCollection: true
 
     # Output the name of web app
-    - task: TerraformCLI@0
-      displayName: Terraform Output
-      inputs:
-        command: 'output'
-        workingDirectory: '$(workDir)/terraform'
-        allowTelemetryCollection: true
+#    - task: TerraformCLI@0
+#      displayName: Terraform Output
+#      inputs:
+#        command: 'output'
+#        workingDirectory: '$(workDir)/terraform'
+#        allowTelemetryCollection: true
   
 #######################################################  
 
@@ -97,7 +97,7 @@ jobs:
         projects: '**/*.csproj'
         workingDirectory: '$(workDir)/src'
         feedsToUse: 'select'
-        verbosityRestore: 'Normal'
+        verbosityRestore: 'Minimal'
 
     # Build 
     - task: DotNetCoreCLI@2
@@ -121,7 +121,7 @@ jobs:
       inputs:
         command: 'publish'
         publishWebProjects: true
-        arguments: '--no-build -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+        arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
         workingDirectory: '$(workDir)/src'
   
 ####################################################### 
