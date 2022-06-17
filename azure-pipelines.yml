@@ -7,8 +7,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   workDir: '$(System.DefaultWorkingDirectory)'
 
@@ -18,11 +16,6 @@ trigger:
     - main
 
 jobs:
-#  - job: AzureLogin
-#    steps:
-#    - task: CmdLine@2
-#      inputs:
-#        script: 'az login'
 
   - job: Terraform
     steps:
@@ -102,6 +95,7 @@ jobs:
         projects: '**/*.csproj'
         workingDirectory: '$(workDir)/src'
         feedsToUse: 'select'
+        verbosityRestore: 'Normal'
 
     # Build 
     - task: DotNetCoreCLI@2
@@ -128,16 +122,18 @@ jobs:
         arguments: '--no-build -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
         workingDirectory: '$(workDir)/src'
   
+
   - job: Deploy_Web_App
     steps:
     
     # Upload the artifact to a web application
     - task: AzureRmWebAppDeployment@4
+      displayName: Upload the artifact
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure DevOps'
         appType: 'webAppLinux'
         WebAppName: '$(WebAppName)'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
         ScriptType: 'Inline Script'
         InlineScript: 'curl $(WebAppURL)'
