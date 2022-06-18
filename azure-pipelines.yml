@@ -116,6 +116,7 @@ jobs:
         arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
         workingDirectory: '$(workDir)/src'
   
+    # Publish Artifact in container
     - task: PublishBuildArtifacts@1
       displayName: Publish the artifact
       inputs:
@@ -150,5 +151,3 @@ jobs:
         appType: 'webAppLinux'
         WebAppName: '$(web-app-name)'
         packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
-        ScriptType: 'Inline Script'
-        InlineScript: 'curl $(Web-App-URL)'
