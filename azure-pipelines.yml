@@ -134,8 +134,12 @@ jobs:
 
   - job: Upload_to_Web_App
     displayName: Upload artifact to Web App
+    dependsOn:
+      - Terraform
+      - Build_Test_Deploy
     steps:
     
+    # Download the artifact
     - task: DownloadBuildArtifacts@1
       displayName: Downloads the artifact
       inputs:
@@ -152,6 +156,6 @@ jobs:
         azureSubscription: 'Azure DevOps'
         appType: 'webAppLinux'
         WebAppName: '$(web-app-name)'
-        packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+        packageForLinux: '$(Build.ArtifactStagingDirectory)/.net-app/Chess.Web.zip'
         ScriptType: 'Inline Script'
         InlineScript: 'curl $(WebAppURL)'
