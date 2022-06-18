@@ -135,7 +135,7 @@ jobs:
   - job: Upload_to_Web_App
     displayName: Upload artifact to Web App
     dependsOn:
-      - Terraform
+#      - Terraform
       - Build_Test_Deploy
     steps:
     
