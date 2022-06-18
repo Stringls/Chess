@@ -153,7 +153,7 @@ resource "azurerm_key_vault" "kv" {
 }
 
 resource "azurerm_key_vault_secret" "kv_sql_pass_secret" {
-  name         = "sql-admin-password"
+  name         = "sql-admin-pass"
   value        = var.sql_admin_password
   key_vault_id = azurerm_key_vault.kv.id
 }
