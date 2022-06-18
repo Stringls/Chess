@@ -78,7 +78,7 @@ resource "azurerm_mssql_server" "sqldb" {
   location                     = azurerm_resource_group.rg.location
   version                      = "12.0"
   administrator_login          = var.sql_admin_login
-  administrator_login_password = azurerm_key_vault_secret.kv_secret.value
+  administrator_login_password = azurerm_key_vault_secret.kv_sql_pass_secret.value
 
   tags = {
     environment = var.env
@@ -152,9 +152,15 @@ resource "azurerm_key_vault" "kv" {
   }
 }
 
-resource "azurerm_key_vault_secret" "kv_secret" {
+resource "azurerm_key_vault_secret" "kv_sql_pass_secret" {
   name         = "sql-admin-password"
   value        = var.sql_admin_password
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+resource "azurerm_key_vault_secret" "kv_web_app_name" {
+  name = "web-app-name"
+  value = azurerm_linux_web_app.webapp.name
   key_vault_id = azurerm_key_vault.kv.id
 }
 
