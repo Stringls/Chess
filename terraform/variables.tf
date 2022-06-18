@@ -54,6 +54,12 @@ variable "kv_sku_name" {
   default     = "standard"
 }
 
+variable "web_app_name" {
+  type        = string
+  description = "The name of web app"
+  default     = "chess-web-app-dj98"
+}
+
 variable "web_app_sku_name" {
   type        = string
   description = "The App Service plan tier"
