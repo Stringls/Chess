@@ -123,8 +123,8 @@ jobs:
         arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
         workingDirectory: '$(workDir)/src'
   
-    
     - task: PublishBuildArtifacts@1
+      displayName: Publish the artifact
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: '.net-app'
@@ -135,6 +135,14 @@ jobs:
   - job: Upload_to_Web_App
     displayName: Upload artifact to Web App
     steps:
+    
+    - task: DownloadBuildArtifacts@1
+      displayName: Downloads the artifact
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '.net-app'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
     
     # Upload the artifact to a web application
     - task: AzureRmWebAppDeployment@4
