@@ -60,16 +60,6 @@ jobs:
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
 
-    - task: TerraformCLI@0
-      inputs:
-        command: 'import'
-        workingDirectory: '$(workDir)/terraform'
-        environmentServiceName: 'Azure DevOps'
-        allowTelemetryCollection: true
-        commandOptions: '-var "sql_admin_password=$(secret_password)"'
-        resourceAddress: 'azurerm_key_vault_secret.kv_sql_pass_secret'
-        resourceId: 'https://chess-kv-dj98.vault.azure.net/secrets/chess-kvs-dj98/58bdf8f2d12c491cad8e62b05b437817'
-
     # Apply
     - task: TerraformCLI@0
       displayName: Terraform Apply
@@ -80,13 +70,6 @@ jobs:
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
     
-#    - task: AzureKeyVault@2
-#      inputs:
-#       azureSubscription: 'Azure DevOps'
-#        KeyVaultName: '$(key-vault-name)'
-#        SecretsFilter: '*'
-#        RunAsPreJob: false
-  
 #######################################################  
 
   - job: Build_Test_Deploy
