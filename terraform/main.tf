@@ -153,13 +153,13 @@ resource "azurerm_key_vault" "kv" {
 }
 
 resource "azurerm_key_vault_secret" "kv_sql_pass_secret" {
-  name         = "sql-admin-pass"
+  name         = module.naming.key_vault_secret.name_unique
   value        = var.sql_admin_password
   key_vault_id = azurerm_key_vault.kv.id
 }
 
 resource "azurerm_key_vault_secret" "kv_web_app_name" {
-  name         = "web-app-name"
+  name         = module.naming.key_vault_secret.name_unique
   value        = azurerm_linux_web_app.webapp.name
   key_vault_id = azurerm_key_vault.kv.id
 }
