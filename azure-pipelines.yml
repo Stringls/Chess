@@ -135,7 +135,7 @@ jobs:
   - job: Upload_to_Web_App
     displayName: Upload artifact to Web App
     dependsOn:
-#      - Terraform
+      - Terraform
       - Build_Test_Deploy
     steps:
     
@@ -158,4 +158,4 @@ jobs:
         WebAppName: 'chess-app-dj98'
         packageForLinux: '$(Build.ArtifactStagingDirectory)/.net-app/Chess.Web.zip'
         ScriptType: 'Inline Script'
-        InlineScript: 'curl $(WebAppURL)'
+        InlineScript: 'curl $(Web-App-URL)'
