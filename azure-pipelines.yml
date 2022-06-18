@@ -127,7 +127,7 @@ jobs:
       displayName: Publish the artifact
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: '.net-app'
+        ArtifactName: 'drop'
         publishLocation: 'Container'
 
 ####################################################### 
@@ -145,7 +145,7 @@ jobs:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: '.net-app'
+        artifactName: 'drop'
         downloadPath: '$(Build.ArtifactStagingDirectory)'
     
     # Upload the artifact to a web application
@@ -155,7 +155,7 @@ jobs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure DevOps'
         appType: 'webAppLinux'
-        WebAppName: 'chess-app-dj98'
-        packageForLinux: '$(Build.ArtifactStagingDirectory)/.net-app/Chess.Web.zip'
+        WebAppName: '$(web-app-name)'
+        packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
         ScriptType: 'Inline Script'
         InlineScript: 'curl $(Web-App-URL)'
