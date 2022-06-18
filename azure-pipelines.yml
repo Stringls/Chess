@@ -7,8 +7,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   workDir: '$(System.DefaultWorkingDirectory)'
 
@@ -18,11 +16,6 @@ trigger:
     - main
 
 jobs:
-#  - job: AzureLogin
-#    steps:
-#    - task: CmdLine@2
-#      inputs:
-#        script: 'az login'
 
   - job: Terraform
     steps:
@@ -77,16 +70,24 @@ jobs:
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
     
-    # Output the name of web app
     - task: TerraformCLI@0
-      displayName: Terraform Output
       inputs:
         command: 'output'
         workingDirectory: '$(workDir)/terraform'
         allowTelemetryCollection: true
+
+    # Output the name of web app
+#    - task: TerraformCLI@0
+#      displayName: Terraform Output
+#      inputs:
+#        command: 'output'
+#        workingDirectory: '$(workDir)/terraform'
+#        allowTelemetryCollection: true
   
-  
+#######################################################  
+
   - job: Build_Test_Deploy
+    displayName: Build, Test and Deploy
     steps:
 
     # Install .NET SDK 6.0.x
@@ -102,6 +103,7 @@ jobs:
         projects: '**/*.csproj'
         workingDirectory: '$(workDir)/src'
         feedsToUse: 'select'
+        verbosityRestore: 'Minimal'
 
     # Build 
     - task: DotNetCoreCLI@2
@@ -125,19 +127,23 @@ jobs:
       inputs:
         command: 'publish'
         publishWebProjects: true
-        arguments: '--no-build -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+        arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
         workingDirectory: '$(workDir)/src'
   
-  - job: Deploy_Web_App
+####################################################### 
+
+  - job: Upload_to_Web_App
+    displayName: Upload artifact to Web App
     steps:
     
     # Upload the artifact to a web application
     - task: AzureRmWebAppDeployment@4
+      displayName: Upload the artifact
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure DevOps'
         appType: 'webAppLinux'
         WebAppName: '$(WebAppName)'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
         ScriptType: 'Inline Script'
         InlineScript: 'curl $(WebAppURL)'
