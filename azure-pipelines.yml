@@ -70,19 +70,12 @@ jobs:
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
     
-    - task: TerraformCLI@0
+    - task: AzureKeyVault@2
       inputs:
-        command: 'output'
-        workingDirectory: '$(workDir)/terraform'
-        allowTelemetryCollection: true
-
-    # Output the name of web app
-#    - task: TerraformCLI@0
-#      displayName: Terraform Output
-#      inputs:
-#        command: 'output'
-#        workingDirectory: '$(workDir)/terraform'
-#        allowTelemetryCollection: true
+        azureSubscription: 'Azure DevOps'
+        KeyVaultName: '$(key-vault-name)'
+        SecretsFilter: '*'
+        RunAsPreJob: false
   
 #######################################################  
 
@@ -130,6 +123,13 @@ jobs:
         arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
         workingDirectory: '$(workDir)/src'
   
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: '.net-app'
+        publishLocation: 'Container'
+
 ####################################################### 
 
   - job: Upload_to_Web_App
@@ -143,7 +143,7 @@ jobs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Azure DevOps'
         appType: 'webAppLinux'
-        WebAppName: '$(WebAppName)'
+        WebAppName: '$(web-app-name)'
         packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
         ScriptType: 'Inline Script'
         InlineScript: 'curl $(WebAppURL)'
