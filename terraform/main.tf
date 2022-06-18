@@ -78,7 +78,7 @@ resource "azurerm_mssql_server" "sqldb" {
   location                     = azurerm_resource_group.rg.location
   version                      = "12.0"
   administrator_login          = var.sql_admin_login
-  administrator_login_password = azurerm_key_vault_secret.kv_sql_pass_secret.value
+  administrator_login_password = var.sql_admin_password
 
   tags = {
     environment = var.env
@@ -120,49 +120,49 @@ resource "azurerm_mssql_database_extended_auditing_policy" "db_policy" {
 # key vault secret
 ########################
 
-resource "azurerm_key_vault" "kv" {
-  name                = module.naming.key_vault.name_unique
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  tenant_id           = data.azurerm_client_config.config.tenant_id
-  sku_name            = var.kv_sku_name
-
-  access_policy {
-    tenant_id = data.azurerm_client_config.config.tenant_id
-    object_id = data.azurerm_client_config.config.object_id
-
-    key_permissions = [
-      "Create",
-      "Get",
-    ]
-
-    secret_permissions = [
-      "Set",
-      "Get",
-      "Delete",
-      "Purge",
-      "Recover"
-    ]
-  }
-
-  tags = {
-    environment = var.env
-    managedBy   = "terraform"
-    gitrepo     = var.repository_url
-  }
-}
-
-resource "azurerm_key_vault_secret" "kv_sql_pass_secret" {
-  name         = module.naming.key_vault_secret.name_unique
-  value        = var.sql_admin_password
-  key_vault_id = azurerm_key_vault.kv.id
-}
-
-resource "azurerm_key_vault_secret" "kv_web_app_name" {
-  name         = module.naming.key_vault_secret.name_unique
-  value        = azurerm_linux_web_app.webapp.name
-  key_vault_id = azurerm_key_vault.kv.id
-}
+#resource "azurerm_key_vault" "kv" {
+#  name                = module.naming.key_vault.name_unique
+#  location            = azurerm_resource_group.rg.location
+#  resource_group_name = azurerm_resource_group.rg.name
+#  tenant_id           = data.azurerm_client_config.config.tenant_id
+#  sku_name            = var.kv_sku_name
+#
+#  access_policy {
+#    tenant_id = data.azurerm_client_config.config.tenant_id
+#    object_id = data.azurerm_client_config.config.object_id
+#
+#    key_permissions = [
+#      "Create",
+#      "Get",
+#    ]
+#
+#    secret_permissions = [
+#      "Set",
+#      "Get",
+#      "Delete",
+#      "Purge",
+#      "Recover"
+#    ]
+#  }
+#
+#  tags = {
+#    environment = var.env
+#    managedBy   = "terraform"
+#    gitrepo     = var.repository_url
+#  }
+#}
+#
+#resource "azurerm_key_vault_secret" "kv_sql_pass_secret" {
+# name         = module.naming.key_vault_secret.name_unique
+#  value        = var.sql_admin_password
+#  key_vault_id = azurerm_key_vault.kv.id
+#}
+#
+#resource "azurerm_key_vault_secret" "kv_web_app_name" {
+#  name         = module.naming.key_vault_secret.name_unique
+#  value        = azurerm_linux_web_app.webapp.name
+#  key_vault_id = azurerm_key_vault.kv.id
+#}
 
 ########################
 # linux web app
