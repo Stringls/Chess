@@ -69,6 +69,12 @@ jobs:
         environmentServiceName: 'Azure DevOps'
         commandOptions: '-var "sql_admin_password=$(secret_password)"'
         allowTelemetryCollection: true
+    
+    - task: TerraformCLI@0
+      inputs:
+        command: 'output'
+        workingDirectory: '$(workDir)/terraform'
+        allowTelemetryCollection: true
 
     # Output the name of web app
 #    - task: TerraformCLI@0
