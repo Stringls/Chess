@@ -159,8 +159,8 @@ resource "azurerm_key_vault_secret" "kv_sql_pass_secret" {
 }
 
 resource "azurerm_key_vault_secret" "kv_web_app_name" {
-  name = "web-app-name"
-  value = azurerm_linux_web_app.webapp.name
+  name         = "web-app-name"
+  value        = azurerm_linux_web_app.webapp.name
   key_vault_id = azurerm_key_vault.kv.id
 }
 
@@ -183,7 +183,7 @@ resource "azurerm_service_plan" "app_plan" {
 }
 
 resource "azurerm_linux_web_app" "webapp" {
-  name                = module.naming.app_service.name_unique
+  name                = var.web_app_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.app_plan.id
