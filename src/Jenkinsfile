@@ -29,7 +29,8 @@ node {
     }
 
     stage('Deploy to K8s') {
-        echo '"${WORSKPACE}"'
+        def workspace = pwd()
+        echo "{env.WORKSPACE}"
         /* Apply all manifest files */
         /* sh "kubectl apply -f ./minikube/" */
         sh "kubectl apply -f ./minikube/service.yaml"
