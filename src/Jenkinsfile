@@ -29,7 +29,7 @@ node {
     }
 
     stage('Deploy to K8s') {
-        echo '$(pwd)'
+        echo '"${WORSKPACE}"'
         /* Apply all manifest files */
         /* sh "kubectl apply -f ./minikube/" */
         sh "kubectl apply -f ./minikube/service.yaml"
