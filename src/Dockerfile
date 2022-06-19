@@ -11,10 +11,10 @@ COPY ["Web/Chess.Web/Chess.Web.csproj", "Web/Chess.Web/"]
 RUN dotnet restore "Web/Chess.Web/Chess.Web.csproj"
 COPY . .
 WORKDIR /src/Web/Chess.Web
-RUN dotnet build "Chess.Web.csproj" --no-restore -c Release -o /app/build
+RUN dotnet build "Chess.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Chess.Web.csproj" --no-build -c Release -o /app/publish
+RUN dotnet publish "Chess.Web.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
