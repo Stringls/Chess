@@ -6,39 +6,37 @@ node {
         REPOSITORY_TAG = "${DOCKERHUB_USERNAME}/${ORGANIZATION_NAME}-${SERVICE_NAME}:${env.BUILD_NUMBER}"
     }
     
-    stages {      
-        stage('Clone Repository') {
-            /* Checkout our repository */
-            checkout scm
-        }
+    stage('Clone Repository') {
+        /* Checkout our repository */
+        checkout scm
+    }
 
-        stage('Build docker image') {
-            dir('src') {
-                /* Build the docker image */
-                app = docker.build("${DOCKERHUB_USERNAME}/${SERVICE_NAME}")
-            }
+    stage('Build docker image') {
+        dir('src') {
+            /* Build the docker image */
+            app = docker.build("${DOCKERHUB_USERNAME}/${SERVICE_NAME}")
         }
+    }
 
-    /*    stage('Test Image') {
-            app.inside {
-                sh 'echo "Tests Passed"'
-            }
+/*    stage('Test Image') {
+        app.inside {
+            sh 'echo "Tests Passed"'
         }
-    */
-        stage('Push Image') {
-            /* Push images: First is tagged with the build BUILD_NUMBER
-            the second is just tagged latest !*/
-            docker.withRegistry('https://registry.hub.docker.com', '${TOKEN_DOCKERHUB}') {
-                app.push("${env.BUILD_NUMBER}")
-                app.push("latest")
-            }
+    }
+*/
+    stage('Push Image') {
+        /* Push images: First is tagged with the build BUILD_NUMBER
+        the second is just tagged latest !*/
+        docker.withRegistry('https://registry.hub.docker.com', '${TOKEN_DOCKERHUB}') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
         }
+    }
 
-        stage('Deploy to K8s') {
-            /* Apply all manifest files */
-            sh "kubectl apply -f ./minikube/ --token=${TOKEN_JENKINS_CREDENTIALS}"
-            /* sh "kubectl apply -f ./minikube/service.yaml"
-            sh "kubectl apply -f ./miniube/app.yaml" */
-        }
+    stage('Deploy to K8s') {
+        /* Apply all manifest files */
+        sh "kubectl apply -f ./minikube/ --token=${TOKEN_JENKINS_CREDENTIALS}"
+        /* sh "kubectl apply -f ./minikube/service.yaml"
+        sh "kubectl apply -f ./miniube/app.yaml" */
     }
 }
