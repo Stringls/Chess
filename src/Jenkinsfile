@@ -34,7 +34,7 @@ node {
 
     stage('Deploy to K8s') {
         /* Apply all manifest files */
-        withKubeConfig([crendetialsId: 'stringls']) {
+        withKubeConfig([credentialsId: 'stringls']) {
             sh "kubectl apply -f ./minikube}"
             
             /* sh "kubectl apply -f ./minikube/service.yaml"
