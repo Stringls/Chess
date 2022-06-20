@@ -34,7 +34,7 @@ node {
 */
     stage('Deploy to K8s') {
         /* Apply all manifest files */
-        withCredentials([[$class: 'UsernameTokenBinding', credentialsId: 'jenkins-credentials', variable: 'TOKEN']]) {
+        withCredentials([string(credentialsId: 'jenkins-token', variable: 'TOKEN')]) {
             sh 'kubectl apply -f ./minikube --token=$<TOKEN>'
             
             /* sh "kubectl apply -f ./minikube/service.yaml"
