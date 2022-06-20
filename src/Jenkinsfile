@@ -3,7 +3,6 @@ node {
     
     environment {
         SERVICE_NAME = "chess-app"
-        REPOSITORY_TAG = "${DOCKERHUB_USERNAME}/${ORGANIZATION_NAME}-${SERVICE_NAME}:${env.BUILD_NUMBER}"
     }
     
     stage('Clone Repository') {
@@ -35,8 +34,11 @@ node {
 
     stage('Deploy to K8s') {
         /* Apply all manifest files */
-        sh "kubectl apply -f ./minikube/ --token=${jenkins-credentials}"
-        /* sh "kubectl apply -f ./minikube/service.yaml"
-        sh "kubectl apply -f ./miniube/app.yaml" */
+        withKubeConfig([crendetialsId: 'stringls']) {
+            sh "kubectl apply -f ./minikube}"
+            
+            /* sh "kubectl apply -f ./minikube/service.yaml"
+            sh "kubectl apply -f ./miniube/app.yaml" */
+        }
     }
 }
