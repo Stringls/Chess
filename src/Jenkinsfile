@@ -1,14 +1,13 @@
 pipeline {
     agent any
-
+    def app
+    
     environment {
         SERVICE_NAME = "chess-app"
         REPOSITORY_TAG = "${DOCKERHUB_USERNAME}/${ORGANIZATION_NAME}-${SERVICE_NAME}:${env.BUILD_NUMBER}"
     }
     
-    stages {
-        def app
-        
+    stages {      
         stage('Clone Repository') {
             /* Checkout our repository */
             checkout scm
