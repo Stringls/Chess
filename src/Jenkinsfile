@@ -14,7 +14,7 @@ node {
     stage('Build docker image') {
         dir('src') {
             /* Build the docker image */
-            app = docker.build("${DOCKERHUB_USERNAME}/${SERVICE_NAME}")
+            app = docker.build("${DOCKERHUB_USERNAME}/${env.SERVICE_NAME}")
         }
     }
 
