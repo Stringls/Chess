@@ -17,12 +17,12 @@ phases:
 
   build:
     commands:
-      - dotnet build -c Release
+      - dotnet build --no-restore -c Release
       - dotnet test -c Release
   
   post_build:
     commands:
-      - dotnet publish -c Release
+      - dotnet publish --no-publish -c Release
 
 artifacts:
   files:
