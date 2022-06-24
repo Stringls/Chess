@@ -22,7 +22,7 @@ phases:
   
   post_build:
     commands:
-      - dotnet publish --no-publish -c Release
+      - dotnet publish --no-build -c Release
 
 artifacts:
   files:
