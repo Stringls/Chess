@@ -5,23 +5,23 @@ env:
     PROJECT: AspNetChessApp
     DOTNET_FRAMEWORK: 6.0.3
   
-  phases:
-    install:
-      runtime-version:
-        dotnet: ${{ env.DOTNET_FRAMEWORK }}
-    
-    pre_build:
-      commands:
-        - cd src
-        - dotnet restore
+phases:
+  install:
+    runtime-version:
+      dotnet: ${{ env.DOTNET_FRAMEWORK }}
+  
+  pre_build:
+    commands:
+      - cd src
+      - dotnet restore
 
-    build:
-      commands:
-        - cd src
-        - dotnet build -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
-        - dotnet test -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
-    
-    post_build:
-      commands:
-        - cd src
-        - dotnet publish -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
+  build:
+    commands:
+      - cd src
+      - dotnet build -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
+      - dotnet test -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
+  
+  post_build:
+    commands:
+      - cd src
+      - dotnet publish -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
