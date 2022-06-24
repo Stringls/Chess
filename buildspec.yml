@@ -22,8 +22,8 @@ phases:
   
   post_build:
     commands:
-      - dotnet publish --no-build -c Release
+      - dotnet publish --no-build -c Release -o /myapp
 
 artifacts:
   files:
-    - ./**/*
+    - .myapp/**/*
