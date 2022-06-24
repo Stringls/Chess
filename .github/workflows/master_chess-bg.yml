@@ -1,12 +1,14 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Azure Pipeline
+name: AWS Pipeline
 
 on: [workflow_dispatch]
 
 env:
-  AZURE_WEBAPP_NAME: chess-app-dkmk
+  WEBAPP_NAME: chess-app-dkmk
+  REGION: us-west-1
+  EB_ENVIRONMENT_NAME: Chessapp-env
 #  AZURE_WEBAPP_PACKAGE_PATH: './published'
   NETCORE_VERSION: '6.0.300'
 
@@ -35,19 +37,13 @@ jobs:
       run: dotnet publish --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
       working-directory: src
 
-#    - name: 'Deploy to Azure WebApp'
-#      uses: azure/webapps-deploy@v2
-#      with:
-#        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-#        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-#        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
         name: .net-app
         path: ${{ env.DOTNET_ROOT }}/myapp
     
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -61,11 +57,14 @@ jobs:
       with:
         name: .net-app
     
-    - name: Deploy to Azure Web App
+    - name: Deploy to EB
       id: deploy-to-webapp
-      uses: azure/webapps-deploy@v2
+      uses: einaregilsson/beanstalk-deploy@v20
       with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        slot-name: 'Production'
-        publish-profile: ${{ secrets.AZURE_APPSERVICE_PUBLISH_PROFILE }}
-        package: .
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: ${{ env.WEBAPP_NAME }}
+        environment_name: ${{ env.EB_ENVRIONMENT_NAME }}
+        version_label: 123
+        region: ${{ env.REGION }}
+        deployment_package: .
