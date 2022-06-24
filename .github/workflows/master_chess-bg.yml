@@ -3,7 +3,7 @@
 
 name: AWS Pipeline
 
-on: [workflow_dispatch]
+on: [push, workflow_dispatch]
 
 env:
   WEBAPP_NAME: chess-app-dkmk
