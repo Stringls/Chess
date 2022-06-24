@@ -7,13 +7,12 @@ env:
 
 phases:
   install:
-    runtime-versions:
-      dotnet: ${{ env.DOTNET_FRAMEWORK }}
+    commands:
+      - /usr/local/bin/dotnet-install.sh --channel LTS
   
   pre_build:
     commands:
-      - cd src
-      - dotnet restore
+      - cd src & dotnet restore
 
   build:
     commands:
