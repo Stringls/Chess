@@ -12,7 +12,8 @@ phases:
   
   pre_build:
     commands:
-      - cd src & dotnet restore
+      - cd src
+      - dotnet restore
 
   build:
     commands:
