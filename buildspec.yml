@@ -17,15 +17,13 @@ phases:
 
   build:
     commands:
-      - cd src
-      - dotnet build -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
-      - dotnet test -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
+      - dotnet build -c Release
+      - dotnet test -c Release
   
   post_build:
     commands:
-      - cd src
-      - dotnet publish -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
+      - dotnet publish -c Release
 
 artifacts:
   files:
-    - ./${{ env.CODEBUILD_SRC_DIR }}/myapp/**/*
+    - ./**/*
