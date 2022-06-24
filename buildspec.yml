@@ -4,10 +4,10 @@ env:
   variables:
     PROJECT: AspNetChessApp
     DOTNET_FRAMEWORK: 6.0.3
-  
+
 phases:
   install:
-    runtime-version:
+    runtime-versions:
       dotnet: ${{ env.DOTNET_FRAMEWORK }}
   
   pre_build:
@@ -25,3 +25,7 @@ phases:
     commands:
       - cd src
       - dotnet publish -c Release -o ${{ env.CODEBUILD_SRC_DIR }}/myapp
+
+artifacts:
+  files:
+    - ./${{ env.CODEBUILD_SRC_DIR }}/myapp/**/*
