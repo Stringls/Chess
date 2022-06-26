@@ -27,6 +27,6 @@ phases:
       - pwd
 
 artifacts:
-  base-directory: Web/Chess.Web/build_output
+  base-directory: ./build_output
   files:
-    - ./**/*
+    - .
