@@ -26,6 +26,5 @@ phases:
       - ls ./build_output
 
 artifacts:
-#  base-directory: $CODEBUILD_SRC_DIR/myapp
   files:
-    - Web/Chess.Web/**/*
+    - Web/Chess.Web/build_output/**/*
