@@ -17,15 +17,15 @@ phases:
 
   build:
     commands:
-      - dotnet build --no-restore -c Release
-      - dotnet test -c Release
+      - dotnet build --no-restore
+      - dotnet test 
   
   post_build:
     commands:
-      - dotnet publish --no-build -c Release -o $CODEBUILD_SRC_DIR/myapp
-      - ls $CODEBUILD_SRC_DIR/myapp
+      - dotnet publish --no-build -c Release -o ./build_output Web/Chess.Web/Chess.Web.csproj
+      - ls ./build_output
 
 artifacts:
 #  base-directory: $CODEBUILD_SRC_DIR/myapp
   files:
-    - ./**/*
+    - Web/Chess.Web/**/*
