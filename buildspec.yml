@@ -23,7 +23,6 @@ phases:
   post_build:
     commands:
       - dotnet publish --no-build -c Release -o $CODEBUILD_SRC_DIR
-      - ls $CODEBUILD_SRC_DIR
 
 #artifacts:
 #  files:
