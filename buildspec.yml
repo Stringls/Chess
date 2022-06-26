@@ -28,4 +28,4 @@ phases:
 artifacts:
 #  base-directory: $CODEBUILD_SRC_DIR/myapp
   files:
-    - $CODEBUILD_SRC_DIR/myapp
+    - ./**/*
