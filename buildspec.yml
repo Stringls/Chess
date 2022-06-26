@@ -26,6 +26,6 @@ phases:
       - ls ./build_output
 
 artifacts:
-  base-directory: ./build_ouput
+  base-directory: Web/Chess.Web/build_ouput
   files:
-    - .
+    - ./**/*
