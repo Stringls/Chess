@@ -27,6 +27,6 @@ phases:
       - pwd
 
 artifacts:
-  base-directory: ./build_output
+  base-directory: $CODEBUILD_SRC_DIR/build_output
   files:
     - .
