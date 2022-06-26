@@ -23,8 +23,6 @@ phases:
   post_build:
     commands:
       - dotnet publish -c Release -o ./build_output Web/Chess.Web/Chess.Web.csproj
-      - cd ./build_output
-      - pwd
 
 artifacts:
   base-directory: $CODEBUILD_SRC_DIR/src/build_output
