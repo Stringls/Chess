@@ -22,9 +22,9 @@ phases:
   
   post_build:
     commands:
-      - dotnet publish --no-build -c Release -o $CODEBUILD_SRC_DIR
+      - dotnet publish --no-build -c Release -o ./myapp
 
 artifacts:
-  base-directory: $CODEBUILD_SRC_DIR
+  base-directory: ./myapp
   files:
-    - ./**/*
+    - ./myapp/**/*
