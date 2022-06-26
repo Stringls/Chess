@@ -22,7 +22,7 @@ phases:
   
   post_build:
     commands:
-      - dotnet publish -c Release -o ./build_output Web/Chess.Web/Chess.Web.csproj
+      - dotnet publish -c Release -o ./build_output /Chess.Web.csproj
       - ls ./build_output
 
 artifacts:
