@@ -14,7 +14,6 @@
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables()
                 .Build();
 
             var builder = new DbContextOptionsBuilder<ChessDbContext>();
