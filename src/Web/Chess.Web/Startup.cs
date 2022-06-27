@@ -1,5 +1,6 @@
 ﻿namespace Chess.Web
 {
+    using System;
     using System.Reflection;
 
     using Chess.Common.Configuration;
@@ -100,7 +101,7 @@
         private void AddDatabase(IServiceCollection services)
         {
             services.AddDbContext<ChessDbContext>(options => options.UseSqlServer(
-                    this.configuration.GetChessDbConnectionString(),
+                    Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? this.configuration.GetChessDbConnectionString(),
                     options => options.EnableRetryOnFailure()));
         }
 
