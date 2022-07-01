@@ -17,7 +17,25 @@ variable "aws_region" {
 }
 
 variable "repo_url" {
-  type = string
+  type        = string
   description = "The GitHub Repo URL"
-  default = "https://github.com/Stringls/Chess"
+  default     = "https://github.com/Stringls/Chess"
+}
+
+variable "identifier" {
+  type        = string
+  description = "The identifier of all resources"
+  default     = "chess"
+}
+
+variable "env" {
+  type        = string
+  description = "The Environment of product"
+  default     = "prod"
+}
+
+variable "sql_admin_password" {
+  type        = string
+  description = "The Master Password"
+  sensitive   = true
 }
