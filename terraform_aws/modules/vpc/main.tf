@@ -1,13 +1,15 @@
 # Internet VPC
 resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  instance_tenancy     = "default"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  enable_classiclink   = false
+  cidr_block           = var.vpc_cidr
+
+  enable_dns_support   = var.enable_dns_hostnames
+  enable_dns_hostnames = var.enable_dns_support
 
   tags = {
-    Name = "main"
+    Name      = "main"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -16,7 +18,10 @@ resource "aws_internet_gateway" "main-gw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "main"
+    Name      = "main"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -33,7 +38,10 @@ resource "aws_route_table" "main-public" {
   }
 
   tags = {
-    Name = "main-public-1"
+    Name      = "main-public-1"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -46,7 +54,10 @@ resource "aws_route_table" "main-private" {
   }
 
   tags = {
-    Name = "main-private-1"
+    Name      = "main-private-1"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -61,7 +72,10 @@ resource "aws_subnet" "main-public-1" {
   availability_zone       = "${var.aws_region}a"
 
   tags = {
-    Name = "main-public-1"
+    Name      = "main-public-1"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -72,7 +86,10 @@ resource "aws_subnet" "main-public-2" {
   availability_zone       = "${var.aws_region}b"
 
   tags = {
-    Name = "main-public-2"
+    Name      = "main-public-2"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -83,7 +100,10 @@ resource "aws_subnet" "main-private-1" {
   availability_zone       = "${var.aws_region}a"
 
   tags = {
-    Name = "main-private-1"
+    Name      = "main-private-1"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
@@ -94,7 +114,10 @@ resource "aws_subnet" "main-private-2" {
   availability_zone       = "${var.aws_region}b"
 
   tags = {
-    Name = "main-private-2"
+    Name      = "main-private-2"
+    Env       = var.env
+    ManagedBy = "terraform"
+    Repo      = var.repo_url
   }
 }
 
