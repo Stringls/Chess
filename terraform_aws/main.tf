@@ -9,17 +9,22 @@ terraform {
   cloud {
     organization = "stringls"
 
-    workspace {
-      name = "gh-action-aws-demo"
+    workspaces {
+      name = "gh-actions-aws-demo"
     }
   }
 
-  backend "s3" {}
+  # backend "s3" {
+  #   encrypt = true
+  #   bucket = "tfstate-s3-bucket"
+  #   key = "tfstate"
+  #   region = "eu-central-1"
+  # }
 }
 
 provider "aws" {
-  access_key = var.AWS_ACCESS_KEY_ID
-  secret_key = var.AWS_SECRET_ACCESS_KEY
+  # access_key = var.AWS_ACCESS_KEY_ID
+  # secret_key = var.AWS_SECRET_ACCESS_KEY
   region     = "${var.aws_region}"
 }
 
