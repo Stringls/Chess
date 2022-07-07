@@ -71,65 +71,76 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "InstanceType"
     value     = var.eb_instance_type
+    resource = ""
   }
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "IamInstanceProfile"
     value     = var.ec2_role
+    resource = ""
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "ServiceRole"
     value     = var.eb_service_role
+    resource = ""
   }
 
   setting {
     namespace = "aws:ec2:vpc"
     name      = "ELBScheme"
     value     = var.elb_scheme
+    resource = ""
   }
 
   setting {
     namespace = "aws:ec2:vpc"
     name      = "ELBSubnets"
     value     = "${var.public_subnet1_id},${var.public_subnet2_id}"
+    resource = ""
   }
 
   setting {
     namespace = "aws:elb:loadbalancer"
     name      = "CrossZone"
     value     = var.cross_zone
+    resource = ""
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:command"
     name      = "BatchSize"
     value     = var.batch_size
+    resource = ""
   }
   setting {
     namespace = "aws:elasticbeanstalk:command"
     name      = "BatchSizeType"
     value     = var.banch_size_type
+    resource = ""
   }
 
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "Availability Zones"
     value     = var.availability_zones
+    resource = ""
   }
 
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "MinSize"
     value     = var.min_size
+    resource = ""
   }
 
   setting {
     namespace = "aws:autoscaling:updatepolicy:rollingupdate"
     name      = "RollingUpdateType"
     value     = var.rolling_update_type
+    resource = ""
   }
 
   setting {
