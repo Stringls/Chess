@@ -89,7 +89,7 @@ module "eb" {
 
   # rds output
   db_instance_password = var.sql_admin_password
-  db_instance_endpoint = module.rds.db_instance_endpoint
+  db_instance_adress = module.rds.db_instance_adress
   db_instance_username = module.rds.db_instance_username
 
   # vpc output

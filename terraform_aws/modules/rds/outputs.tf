@@ -1,4 +1,4 @@
-output "db_instance_endpoint" {
+output "db_instance_adress" {
   value = aws_db_instance.rds-app-prod.address
 }
 
