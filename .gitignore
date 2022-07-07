@@ -363,3 +363,6 @@ tfplan
 .terraform*
 *.tfstate
 *.tfstate.*
+
+# AWS Credentials
+.aws
