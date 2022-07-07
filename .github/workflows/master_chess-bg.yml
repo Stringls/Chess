@@ -85,9 +85,9 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
        terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
-       ::set-output name=app_name::terraform output app-name
-       ::set-output name=env_app::terraform output env-app
-       ::set-output name=aws_region::terraform output aws-region
+       ::set-output name::app_name=terraform output app-name
+       ::set-output name::env_app=terraform output env-app
+       ::set-output name::aws_region=terraform output aws-region
 
       working-directory: ${{ env.TF_DIR }}
 
@@ -144,8 +144,8 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: ${{ jobs.terraform.outputs.app_name }}
-        environment_name: ${{ jobs.terraform.outputs.env_app }}
+        application_name: ${{ needs.terraform.outputs.app_name }}
+        environment_name: ${{ needs.terraform.outputs.env_app }}
         version_label: "version-label-${{ github.run_number }}"
-        region: ${{ jobs.terraform.outputs.aws_region }}
+        region: ${{ needs.terraform.outputs.aws_region }}
         deployment_package: .
