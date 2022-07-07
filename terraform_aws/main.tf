@@ -6,6 +6,14 @@ terraform {
     }
   }
 
+  cloud {
+    organization = "stringls"
+
+    workspace {
+      name = "gh-action-aws-demo"
+    }
+  }
+
   backend "s3" {}
 }
 
