@@ -1,0 +1,26 @@
+version: 0.2
+
+
+phases:
+  install:
+    commands:
+      - /usr/local/bin/dotnet-install.sh --channel LTS
+  
+  pre_build:
+    commands:
+      - cd src
+      - dotnet restore
+
+  build:
+    commands:
+      - dotnet build -c Release --no-restore
+      - dotnet test 
+  
+  post_build:
+    commands:
+      - dotnet publish -c Release --no-build --no-restore -o ./build_output Web/Chess.Web/Chess.Web.csproj
+
+artifacts:
+  base-directory: $CODEBUILD_SRC_DIR/src/build_output
+  files:
+    - ./**/*
