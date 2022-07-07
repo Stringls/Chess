@@ -16,7 +16,7 @@ variable "env" {
 }
 
 variable "vpc_cidr" {
-  type = string
+  type        = string
   description = "The VPC CIDR"
 }
 
