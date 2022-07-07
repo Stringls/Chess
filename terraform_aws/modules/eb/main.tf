@@ -7,7 +7,7 @@ resource "aws_key_pair" "app" {
 # security group
 resource "aws_security_group" "eb_app_prod" {
   vpc_id      = var.vpc_id
-  name        = var.eb_identifier
+  name        = "${var.identifier}-${var.eb_identifier}"
   description = "App prod security group"
   egress {
     from_port   = 0
@@ -32,7 +32,7 @@ resource "aws_elastic_beanstalk_application" "app" {
 }
 
 resource "aws_elastic_beanstalk_environment" "app-prod" {
-  name                = var.eb_identifier
+  name                = "${var.identifier}-${var.eb_identifier}"
   application         = aws_elastic_beanstalk_application.app.name
   solution_stack_name = var.solution_stack_name
   cname_prefix        = "${var.identifier}-app-prod"
