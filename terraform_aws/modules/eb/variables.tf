@@ -76,7 +76,7 @@ variable "rolling_update_type" {
   description = "How AWS CloudFormation handles rolling updates for an Auto Scaling group"
 }
 
-variable "db_instance_endpoint" {
+variable "db_instance_address" {
   type        = string
   description = "The DB instance Endpoint"
 }

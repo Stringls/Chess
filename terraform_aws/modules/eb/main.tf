@@ -136,11 +136,13 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "ASPNETCORE_ENVIRONMENT"
     value     = "Development"
+    resource = ""
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "CONNECTION_STRING"
-    value     = "Server=${var.db_instance_endpoint},1433;Database=Chess;User Id=${var.db_instance_username};Password=${var.db_instance_password};"
+    value     = "Server=${var.db_instance_address},1433;Database=Chess;User Id=${var.db_instance_username};Password=${var.db_instance_password};"
+    resource = ""
   }
 }
