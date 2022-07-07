@@ -75,7 +75,7 @@ jobs:
             repo: context.repo.repo,
             body: output
           })
-      
+
     - name: Terraform Plan Status
       if: steps.plan.outcome == 'failure'
       run: exit 1
@@ -85,9 +85,9 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
        terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
-       ::set-output name::app_name=terraform output app-name
-       ::set-output name::env_app=terraform output env-app
-       ::set-output name::aws_region=terraform output aws-region
+       echo "::set-output name=app_name::terraform output app-name"
+       echo "::set-output name=env_app::terraform output env-app"
+       echo "::set-output name=aws_region::terraform output aws-region"
 
       working-directory: ${{ env.TF_DIR }}
 
