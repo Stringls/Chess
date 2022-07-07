@@ -33,19 +33,24 @@ jobs:
       
     - name: Terraform Init
       id: init
+<<<<<<< HEAD
       run: terraform init
       working_directory: ${{ env.TF_DIR }}
+=======
+      run: terraform init -backend-config="bucket=${{ env.S3_STATE_BUCKET_NAME }}" -backend-config="key=${{ env.S3_STATE_BUCKET_KEY }}" -backend-config="region=${{ env.AWS_REGION }}"
+      working-directory: ${{ env.TF_DIR }}
+>>>>>>> 8ee682a147902c48357e09e65a6c2df7f68bfe7f
 
     - name: Terraform Validate
       id: validate
       run: terraform validate -no-color
-      working_directory: ${{ env.TF_DIR }}
+      working-directory: ${{ env.TF_DIR }}
 
     - name: Terraform Plan
       id: plan
       if: github.event_name == 'pull_request'
       run: terraform plan -no-color -input=false
-      working_directory: ${{ env.TF_DIR }}
+      working-directory: ${{ env.TF_DIR }}
       continue-on-error: true
 
     - name: Update Pull Request
@@ -83,9 +88,9 @@ jobs:
       run: exit 1
 
     - name: Terraform Apply
-      if: github.ref = 'refs/heads/main' && github.event_name = 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-prove -input=false
-      working_directory: ${{ env.TF_DIR }}
+      working-directory: ${{ env.TF_DIR }}
 
   build:
     runs-on: ubuntu-latest
