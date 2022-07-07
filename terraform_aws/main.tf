@@ -6,13 +6,13 @@ terraform {
     }
   }
 
-  #  backend "s3" {}
+  backend "s3" {}
 }
 
 provider "aws" {
   access_key = var.AWS_ACCESS_KEY_ID
   secret_key = var.AWS_SECRET_ACCESS_KEY
-  region     = var.aws_region
+  region     = "${var.aws_region}"
 }
 
 ######################################################
@@ -36,18 +36,9 @@ module "vpc" {
 
   aws_region = var.aws_region
 
-  vpc_cidr = "10.0.0.0/16"
-
-  route = [
-    {
-      cidr_block = "0.0.0.0/0"
-      gateway_id = module.vpc.gateway_id
-      instance_id = null
-      nat_gateway_id = null
-    }
-  ]
-
-  subnet_ids = module.subnet
+  vpc_cidr             = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 }
 
 ######################################################
@@ -98,3 +89,33 @@ module "eb" {
   eb_service_role = module.iam.eb_service_role
   ec2_role        = module.iam.ec2_role
 }
+
+######################################################
+# BASTION HOST DEFINITION
+######################################################
+
+# module "bastion" {
+#   source = "umotif-public/bastion/aws"
+#   version = "~> 2.1.0"
+
+#   name_prefix = "${var.identifier}-bastion-host"
+
+#   vpc_id         = module.vpc.vpc_id
+#   subnets        = ["${module.vpc.public_subnet1_id}", "${module.vpc.public_subnet2_id}"]
+
+#   hosted_zone_id = "Z1IY32BQNIYX16"
+#   ssh_key_name   = "${var.SSH_PUBLIC_KEY}"
+
+#   tags = {
+#     Project = "Test"
+#   }
+# }
+
+######################################################
+# KMS DEFINITION
+######################################################
+
+# module "kms" {
+#   source = "./modules/kms"
+
+# }
