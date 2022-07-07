@@ -1,4 +1,4 @@
-# You must first create a public key by execution ssh-keygen command
+# You must first create a public key and a private key by execution ssh-keygen command
 variable "SSH_PUBLIC_KEY" {
   type        = string
   default     = "~/.ssh/id_rsa.pub"
@@ -36,7 +36,7 @@ variable "associate_public_ip_address" {
 
 variable "elb_scheme" {
   type        = string
-  default     = "internal"
+  default     = "public"
   description = "The ELB Scheme"
 }
 
