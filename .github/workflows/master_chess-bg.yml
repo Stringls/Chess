@@ -15,6 +15,10 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
     name: 'Terraform'
+    outputs:
+      app_name: ${{ steps.apply.outputs.app_name }}
+      env_app: ${{ steps.apply.outputs.env_app }}
+      aws_region: ${{ steps.apply.outputs.aws_region }}
 
     steps:
     - uses: actions/checkout@v3
@@ -77,8 +81,14 @@ jobs:
       run: exit 1
 
     - name: Terraform Apply
+      id: apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
+      run: |
+       terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
+       ::set-output name=app_name::terraform output app-name
+       ::set-output name=env_app::terraform output env-app
+       ::set-output name=aws_region::terraform output aws-region
+
       working-directory: ${{ env.TF_DIR }}
 
   build:
@@ -117,6 +127,9 @@ jobs:
     needs: [build, terraform]
     environment:
       name: 'Production'
+      APPLICATION_NAME: ${{ jobs.terraform.outputs.app_name }}
+      ENVIRONMENT_NAME: ${{ jobs.terraform.outputs.env_app }}
+      AWS_REGION: ${{ jobs.terraform.outputs.aws_region }}
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -131,8 +144,8 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: ${{ env.WEBAPP_NAME }}
-        environment_name: ${{ env.EB_ENVRIONMENT_NAME }}
-        version_label: 123
-        region: ${{ env.REGION }}
+        application_name: ${{ env.APPLICATION_NAME }}
+        environment_name: ${{ env.ENVRIONMENT_NAME }}
+        version_label: "version-label-${{ github.run_number }}"
+        region: ${{ env.AWS_REGION }}
         deployment_package: .
