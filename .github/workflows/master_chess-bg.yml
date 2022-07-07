@@ -3,22 +3,95 @@
 
 name: AWS Pipeline
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  pull_requests:
+  workflow_dispatch:
 
 env:
-  WEBAPP_NAME: chess-app-dkmk
-  REGION: us-west-1
+  S3_STATE_BUCKET_NAME: tfstate-s3-bucket
+  S3_STATE_BUCKET_KEY: tfstate
+  TF_DIR: terraform_aws
+  AWS_REGION: eu-central-1
   EB_ENVIRONMENT_NAME: Chessapp-env
-#  AZURE_WEBAPP_PACKAGE_PATH: './published'
   NETCORE_VERSION: '6.0.300'
 
 jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    name: 'Terraform'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp@setup-terraform@v1
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      
+    - name: Terraform Init
+      id: init
+      run: terraform init -backend-config="bucket=${{ env.S3_STATE_BUCKET_NAME }}" -backend-config="key=${{ env.S3_STATE_BUCKET_KEY }}" -backend-config="region=${{ env.AWS_REGION }}"
+      working_directory: ${{ env.TF_DIR }}
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+      working_directory: ${{ env.TF_DIR }}
+
+    - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -no-color -input=false
+      working_directory: ${{ env.TF_DIR }}
+      continue-on-error: true
+
+    - name: Update Pull Request
+      uses: actions/github-script@6
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+
+          <details><summary>Show Plan</summary>
+
+          \`\`\`\n
+          ${process.env.PLAN}
+          \`\`\`
+
+          </details>
+
+          *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
+      
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref = 'refs/heads/main' && github.event_name = 'push'
+        run: terraform apply -auto-prove -input=false
+        working_directory: ${{ env.TF_DIR }}
   build:
     runs-on: ubuntu-latest
     name: Build
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
       uses: actions/setup-dotnet@v1
@@ -34,7 +107,7 @@ jobs:
       working-directory: src
 
     - name: Publish
-      run: dotnet publish --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
+      run: dotnet publish --no-restore --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
       working-directory: src
 
     - name: Upload artifact for deployment job
@@ -42,7 +115,7 @@ jobs:
       with:
         name: .net-app
         path: ${{ env.DOTNET_ROOT }}/myapp
-    
+
 
   deploy:
     runs-on: ubuntu-latest
