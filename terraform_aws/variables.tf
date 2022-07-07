@@ -16,6 +16,12 @@ variable "aws_region" {
   default     = "eu-central-1"
 }
 
+variable "profile" {
+  type = string
+  description = "The Profile with credentials"
+  default = "~/Chess/.aws/credential"
+}
+
 variable "repo_url" {
   type        = string
   description = "The GitHub Repo URL"
