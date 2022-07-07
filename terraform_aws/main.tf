@@ -10,7 +10,7 @@ terraform {
     organization = "stringls"
 
     workspaces {
-      name = "gh-actions-aws-demo"
+      name = "gh-action-aws-demo"
     }
   }
 
