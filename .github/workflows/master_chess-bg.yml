@@ -84,7 +84,7 @@ jobs:
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-prove -input=false
+      run: terraform apply -input=false -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
       working-directory: ${{ env.TF_DIR }}
 
   build:
