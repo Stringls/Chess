@@ -1,7 +1,7 @@
 # security groups
 resource "aws_security_group" "rds-app-prod" {
   vpc_id      = var.vpc_id
-  name        = "${var.identifier}-${var.rds_identifier}"
+  name        = "${var.identifier}-lala-${var.rds_identifier}"
   description = "Allow inbound SQL Server traffic"
 
   tags = {
