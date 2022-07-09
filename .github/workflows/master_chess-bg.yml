@@ -145,8 +145,11 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: ${{ needs.terraform.outputs.app_name }}
-        environment_name: ${{ needs.terraform.outputs.env_app }}
+        # application_name: ${{ needs.terraform.outputs.app_name }}
+        application_name: chess-app
+        environment_name: chess-app-prod
+        region: eu-central-1
+        # environment_name: ${{ needs.terraform.outputs.env_app }}
         version_label: "version-label-${{ github.run_number }}"
-        region: ${{ needs.terraform.outputs.aws_region }}
+        # region: ${{ needs.terraform.outputs.aws_region }}
         deployment_package: .
