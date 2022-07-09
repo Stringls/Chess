@@ -8,6 +8,6 @@ batch:
       buildspec: terraform.yml
       ignore-failure: false
 
-    - identifier: dotnet_build
-      buildspec: dotnet.yml
-      ignore-failure: false
+    # - identifier: dotnet_build
+    #   buildspec: dotnet.yml
+    #   ignore-failure: false
