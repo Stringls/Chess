@@ -4,7 +4,11 @@ version: 0.2
 batch:
   fast-fail: false
   build-list:
-    - identifier: terraform_build
+    - identifier: terraform_buil
+      env:
+        secrets-manager:
+          AWS_ACCESS_KEY_ID: "IAM_creds:AWS_ACCESS_KEY_ID"
+          AWS_SECRET_ACCESS_KEY: "IAM_creds:AWS_SECRET_ACCESS_KEY"
       buildspec: terraform.yml
       ignore-failure: false
 
