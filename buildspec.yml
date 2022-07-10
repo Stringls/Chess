@@ -10,7 +10,7 @@ batch:
           AWS_ACCESS_KEY_ID: "IAM_creds:AWS_ACCESS_KEY_ID"
           AWS_SECRET_ACCESS_KEY: "IAM_creds:AWS_SECRET_ACCESS_KEY"
           SQL_ADMIN_PASSWORD: "SQL_CREDS:SQL_ADMIN_PASSWORD"
-        TF_VERSION: 4.20.1
+        TF_VERSION: 1.2.4
         TF_DIR: terraform_aws
       buildspec: terraform.yml
       ignore-failure: false
