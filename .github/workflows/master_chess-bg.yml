@@ -152,4 +152,4 @@ jobs:
         # environment_name: ${{ needs.terraform.outputs.env_app }}
         version_label: "version-label-${{ github.run_number }}"
         # region: ${{ needs.terraform.outputs.aws_region }}
-        deployment_package: .
+        deployment_package: .net-app
