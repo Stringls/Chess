@@ -1,0 +1,34 @@
+version: '2.1'
+orbs:
+  terraform: circleci/terraform@3.1
+jobs:
+  single-job-lifecycle:
+    executor: terraform/default
+    steps:
+      - checkout
+      - run:
+        command: >-
+          echo "credentials \"app.terraform.io\" {token = \"$TERRAFORM_TOKEN\"}" > $HOME/.terraformrc
+        name: Create .terraformrc file locally
+      - terraform/install:
+        arch: amd64
+        os: linux
+        terraform_version: $TF_VERSION
+      - terraform/fmt:
+        path: .
+      - terraform/validate:
+        path: .
+      - terraform/init:
+        backend: true
+        path: .
+      - terraform/plan:
+        path: .
+        var: sql_admin_password=$SQL_ADMIN_PASSWORD
+      - terraform/apply:
+        path: .
+        var: sql_admin_password=$SQL_ADMIN_PASSWORD
+    working_directory: ~/$TF_DIR
+workflows:
+  single-job-lifecycle:
+    jobs:
+      - single-job-lifecycle
