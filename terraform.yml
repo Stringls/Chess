@@ -4,23 +4,23 @@ version: 0.2
 phases:
   install:
     commands:
-      - cd /usr/bin
-      - curl -s -qL -o terraform.zip https://releases.hashicorp.com/terraform/$TF_VERSION/terraform_$TF_VERSION_linux_amd64.zip
-      - ls
-      - unzip -o terraform.zip
+      - curl -s -qL -o terraform_$TF_VERSION.zip https://releases.hashicorp.com/terraform/$TF_VERSION/terraform_$TF_VERSION_linux_amd64.zip
+      - unzip terraform_$TF_VERSION.zip -d /usr/bin/
+      - chmod +x /usr/bin/terraform
+    finally:
+      - terraform --version
 
   build:
     commands:
+      - echo "Entered the build phase"
       - cd "$CODEBUILD_SRC_DIR/$TF_DIR"
       - terraform init -input=false -backend-config="bucket=$S3_BUCKET_NAME" -backend-config="key=$S3_BUCKET_KEY" -backend-config="region=$AWS_REGION"
       - terraform validate
       - terraform plan -var="AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -var="AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -var="sql_admin_password=${SQL_ADMIN_PASSWORD}" -o tfplan
       - terraform apply tfplan
+    finally:
+      - echo "This always runs even if the login command fails"
 
   post_build:
     commands:
       - echo "Terraform completed on `date`"
-
-artifacts:
-  files:
-    - '**/*'
