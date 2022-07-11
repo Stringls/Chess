@@ -11,14 +11,15 @@ on:
 env:
   TF_DIR: terraform_aws
   NETCORE_VERSION: '6.0.300'
+  PIPELINE_NAME: 'chess-app-pipeline'
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     name: 'Terraform'
     outputs:
-      app_name: ${{ steps.apply.outputs.app_name }}
-      env_app: ${{ steps.apply.outputs.env_app }}
+      # app_name: ${{ steps.apply.outputs.app_name }}
+      # env_app: ${{ steps.apply.outputs.env_app }}
       aws_region: ${{ steps.apply.outputs.aws_region }}
 
     steps:
@@ -86,70 +87,90 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
        terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
-       echo "::set-output name=app_name::$(terraform output app-name)"
-       echo "::set-output name=env_app::$(terraform output env-app)"
+      #  echo "::set-output name=app_name::$(terraform output app-name)"
+      #  echo "::set-output name=env_app::$(terraform output env-app)"
        echo "::set-output name=aws_region::$(terraform output aws-region)"
 
       working-directory: ${{ env.TF_DIR }}
 
-  build:
-    runs-on: ubuntu-latest
-    name: Build
+    # - name: Configure AWS Creds
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ${{ steps.apply.outputs.aws_region }}
 
+
+  trigger:
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
-      uses: actions/setup-dotnet@v1
+    - name: Trigger AWS CodePipeline
+      uses: zulhfreelancer/aws-codepipeline-action@v1.0.7
       with:
-        dotnet-version: ${{ env.NETCORE_VERSION }}
+        aws-region: ${{ needs.terraform.outputs.aws_region }}
+        aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        pipeline-name: ${{ env.PIPELINE_NAME }}
 
-    - name: Restore
-      run: dotnet restore
-      working-directory: src
+  # build:
+  #   runs-on: ubuntu-latest
+  #   name: Build
 
-    - name: Build
-      run: dotnet build --no-restore -c Release
-      working-directory: src
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Publish
-      run: dotnet publish --no-restore --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
-      working-directory: src
+  #   - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: ${{ env.NETCORE_VERSION }}
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v2
-      with:
-        name: .net-app
-        path: ${{ env.DOTNET_ROOT }}/myapp
+  #   - name: Restore
+  #     run: dotnet restore
+  #     working-directory: src
+
+  #   - name: Build
+  #     run: dotnet build --no-restore -c Release
+  #     working-directory: src
+
+  #   - name: Publish
+  #     run: dotnet publish --no-restore --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
+  #     working-directory: src
+
+  #   - name: Upload artifact for deployment job
+  #     uses: actions/upload-artifact@v2
+  #     with:
+  #       name: .net-app
+  #       path: ${{ env.DOTNET_ROOT }}/myapp
 
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build, terraform]
-    environment:
-      name: 'Production'
-      # APPLICATION_NAME: ${{ jobs.terraform.outputs.app_name }}
-      # ENVIRONMENT_NAME: ${{ jobs.terraform.outputs.env_app }}
-      # AWS_REGION: ${{ jobs.terraform.outputs.aws_region }}
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [build, terraform]
+  #   environment:
+  #     name: 'Production'
+  #     # APPLICATION_NAME: ${{ jobs.terraform.outputs.app_name }}
+  #     # ENVIRONMENT_NAME: ${{ jobs.terraform.outputs.env_app }}
+  #     # AWS_REGION: ${{ jobs.terraform.outputs.aws_region }}
+  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-    steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v2
-      with:
-        name: .net-app
+  #   steps:
+  #   - name: Download artifact from build job
+  #     uses: actions/download-artifact@v2
+  #     with:
+  #       name: .net-app
     
-    - name: Deploy to EB
-      id: deploy-to-webapp
-      uses: einaregilsson/beanstalk-deploy@v10
-      with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: ${{ needs.terraform.outputs.app_name }}
-        # application_name: ${{ needs.terraform.outputs.app_name }}
-        # environment_name: chess-app-prod
-        # region: eu-central-1
-        environment_name: ${{ needs.terraform.outputs.env_app }}
-        version_label: "version-label-${{ github.run_number }}"
-        region: ${{ needs.terraform.outputs.aws_region }}
-        deployment_package: .net-app.zip
+  #   - name: Deploy to EB
+  #     id: deploy-to-webapp
+  #     uses: einaregilsson/beanstalk-deploy@v10
+  #     with:
+  #       aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       application_name: ${{ needs.terraform.outputs.app_name }}
+  #       # application_name: ${{ needs.terraform.outputs.app_name }}
+  #       # environment_name: chess-app-prod
+  #       # region: eu-central-1
+  #       environment_name: ${{ needs.terraform.outputs.env_app }}
+  #       version_label: "version-label-${{ github.run_number }}"
+  #       region: ${{ needs.terraform.outputs.aws_region }}
+  #       deployment_package: .net-app.zip
+
+  
