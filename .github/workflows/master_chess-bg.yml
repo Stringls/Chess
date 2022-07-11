@@ -155,12 +155,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build, terraform]
-  #   environment:
-  #     name: 'Production'
-  #     # APPLICATION_NAME: ${{ jobs.terraform.outputs.app_name }}
-  #     # ENVIRONMENT_NAME: ${{ jobs.terraform.outputs.env_app }}
-  #     # AWS_REGION: ${{ jobs.terraform.outputs.aws_region }}
-  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    environment:
+      # name: 'Production'
+      # APPLICATION_NAME: ${{ jobs.terraform.outputs.app_name }}
+      # ENVIRONMENT_NAME: ${{ jobs.terraform.outputs.env_app }}
+      # AWS_REGION: ${{ jobs.terraform.outputs.aws_region }}
+      # url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     - name: Set up python 3.6 (needs for eb cli)
       uses: actions/setup-python@v1
