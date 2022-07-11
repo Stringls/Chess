@@ -15,6 +15,7 @@ env:
   AWS_PLATFORM: '.NET Core on Linux'
   S3_BUCKET: 'chess-app-s3-bucket'
   APP_NAME: 'chess-app'
+  AWS_REGION: 'eu-central-1'
 
 jobs:
   terraform:
@@ -144,7 +145,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         # aws-region: ${{ needs.terraform.outputs.aws_region }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
     - run: |
         AWS_VERSION_LABEL=${{ env.APP_NAME }}-${{ github.run_number }}
 
@@ -175,7 +176,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
     
     - run: |
         AWS_VERSION_LABEL=${{ env.APP_NAME }}-${{ github.run_number }}
