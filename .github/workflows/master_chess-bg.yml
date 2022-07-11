@@ -13,14 +13,15 @@ env:
   NETCORE_VERSION: '6.0.300'
   # PIPELINE_NAME: 'chess-app-pipeline'
   AWS_PLATFORM: '.NET Core on Linux'
+  S3_BUCKET: 'chess-app-s3-bucket'
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
     name: 'Terraform'
     outputs:
-      # app_name: ${{ steps.apply.outputs.app_name }}
-      # env_app: ${{ steps.apply.outputs.env_app }}
+      app_name: ${{ steps.apply.outputs.app_name }}
+      env_app: ${{ steps.apply.outputs.env_app }}
       aws_region: ${{ steps.apply.outputs.aws_region }}
 
     steps:
@@ -108,7 +109,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    name: Build
+    name: Build and Deploy artifact to S3 bucket
 
     steps:
     - uses: actions/checkout@v3
@@ -148,6 +149,9 @@ jobs:
 
         echo "Uploading Source bundle to S3"
         S3_KEY="$AWS_VERSION_LABEL.zip"
+        echo ${{ needs.terraform.outputs.aws_region}}
+        echo ${{ needs.terraform.outputs.app_name }}
+        echo ${{ needs.terraform.outputs.env_app }}
         aws s3 cp .net-app.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ needs.terraform.outputs.aws_region}}
 
         echo "Creating Elastic Beanstalk version"
