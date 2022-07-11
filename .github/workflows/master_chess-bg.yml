@@ -11,7 +11,8 @@ on:
 env:
   TF_DIR: terraform_aws
   NETCORE_VERSION: '6.0.300'
-  PIPELINE_NAME: 'chess-app-pipeline'
+  # PIPELINE_NAME: 'chess-app-pipeline'
+  AWS_PLATFORM: '.NET Core on Linux'
 
 jobs:
   terraform:
@@ -86,68 +87,74 @@ jobs:
       id: apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}"
+        terraform apply -input=false -auto-approve -var="sql_admin_password=${{ secrets.SQL_ADMIN_PASSWORD }}" -var="SSH_PUBLIC_KEY=${{ secrets.SSH_PUBLIC_KEY }}"
         #echo "::set-output name=app_name::$(terraform output app-name)"
         #echo "::set-output name=env_app::$(terraform output env-app)"
         echo "::set-output name=aws_region::$(terraform output aws-region)"
-
       working-directory: ${{ env.TF_DIR }}
 
-    # - name: Configure AWS Creds
-    #   uses: aws-actions/configure-aws-credentials@v1
-    #   with:
-    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     aws-region: ${{ steps.apply.outputs.aws_region }}
-
-
-  trigger:
-    name: "Trigger CodePipeline"
-    needs: terraform
-    runs-on: ubuntu-latest
-    steps:
-    - name: Trigger AWS CodePipeline
-      uses: zulhfreelancer/aws-codepipeline-action@v1.0.7
-      with:
-        aws-region: ${{ needs.terraform.outputs.aws_region }}
-        aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        pipeline-name: ${{ env.PIPELINE_NAME }}
-
-  # build:
+  # trigger:
+  #   name: "Trigger CodePipeline"
+  #   needs: terraform
   #   runs-on: ubuntu-latest
-  #   name: Build
-
   #   steps:
-  #   - uses: actions/checkout@v3
-
-  #   - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
-  #     uses: actions/setup-dotnet@v1
+  #   - name: Trigger AWS CodePipeline
+  #     uses: zulhfreelancer/aws-codepipeline-action@v1.0.7
   #     with:
-  #       dotnet-version: ${{ env.NETCORE_VERSION }}
+  #       aws-region: ${{ needs.terraform.outputs.aws_region }}
+  #       aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       pipeline-name: ${{ env.PIPELINE_NAME }}
 
-  #   - name: Restore
-  #     run: dotnet restore
-  #     working-directory: src
+  build:
+    runs-on: ubuntu-latest
+    name: Build
 
-  #   - name: Build
-  #     run: dotnet build --no-restore -c Release
-  #     working-directory: src
+    steps:
+    - uses: actions/checkout@v3
 
-  #   - name: Publish
-  #     run: dotnet publish --no-restore --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
-  #     working-directory: src
+    - name: Setup .NET Core SDK ${{ env.NETCORE_VERSION }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.NETCORE_VERSION }}
 
-  #   - name: Upload artifact for deployment job
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: .net-app
-  #       path: ${{ env.DOTNET_ROOT }}/myapp
+    - name: Restore
+      run: dotnet restore
+      working-directory: src
 
+    - name: Build
+      run: dotnet build --no-restore -c Release
+      working-directory: src
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [build, terraform]
+    - name: Publish
+      run: dotnet publish --no-restore --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
+      working-directory: src
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v2
+      with:
+        name: .net-app
+        path: ${{ env.DOTNET_ROOT }}/myapp
+
+    - name: Configure AWS Creds
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ needs.terraform.outputs.aws_region }}
+    - run: |
+        AWS_VERSION_LABEL=${{ needs.terraform.outputs.app_name }}-${{ github.run_number }}
+
+        echo "Uploading Source bundle to S3"
+        S3_KEY="$AWS_VERSION_LABEL.zip"
+        aws s3 cp .net-app.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ needs.terraform.outputs.aws_region}}
+
+        echo "Creating Elastic Beanstalk version"
+        aws elasticbeanstalk create-application-version --application-name ${{ needs.terraform.outputs.app_name }} --version-label $AWS_VERSION_LABEL --region ${{ needs.terraform.outputs.aws_region }} --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${S3_KEY} --auto-create-application
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build, terraform]
   #   environment:
   #     name: 'Production'
   #     # APPLICATION_NAME: ${{ jobs.terraform.outputs.app_name }}
@@ -155,25 +162,27 @@ jobs:
   #     # AWS_REGION: ${{ jobs.terraform.outputs.aws_region }}
   #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-  #   steps:
-  #   - name: Download artifact from build job
-  #     uses: actions/download-artifact@v2
-  #     with:
-  #       name: .net-app
-    
-  #   - name: Deploy to EB
-  #     id: deploy-to-webapp
-  #     uses: einaregilsson/beanstalk-deploy@v10
-  #     with:
-  #       aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       application_name: ${{ needs.terraform.outputs.app_name }}
-  #       # application_name: ${{ needs.terraform.outputs.app_name }}
-  #       # environment_name: chess-app-prod
-  #       # region: eu-central-1
-  #       environment_name: ${{ needs.terraform.outputs.env_app }}
-  #       version_label: "version-label-${{ github.run_number }}"
-  #       region: ${{ needs.terraform.outputs.aws_region }}
-  #       deployment_package: .net-app.zip
+    - name: Set up python 3.6 (needs for eb cli)
+      uses: actions/setup-python@v1
+      with:
+        python-version: "3.6"
 
-  
+    - name: Configure AWS Creds
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ needs.jobs.outputs.aws_region }}
+    
+    - run: |
+        AWS_VERSION_LABEL=${{ needs.jobs.outputs.app_name }}-${{ github.run_number }}
+
+        echo "Installing Elastic Beanstalk Cli"
+        python -m pip install --upgrade pip
+        pip install awsebcli --upgrade
+        eb --version
+
+        echo "Deploy init"
+        eb init -i ${{ needs.terraform.outputs.app_name }} -p ${{ env.AWS_PLATFORM }} -k ${{ secrets.SSH_PUBLIC_KEY }} --region ${{ needs.terraform.outputs.aws_region }}
+        eb deploy ${{ needs.terraform.outputs.app_name }} --version ${AWS_VERSION_LABEL}
+        echo "Deploy finished"
