@@ -14,6 +14,7 @@ env:
   # PIPELINE_NAME: 'chess-app-pipeline'
   AWS_PLATFORM: '.NET Core on Linux'
   S3_BUCKET: 'chess-app-s3-bucket'
+  APP_NAME: 'chess-app'
 
 jobs:
   terraform:
@@ -145,17 +146,15 @@ jobs:
         # aws-region: ${{ needs.terraform.outputs.aws_region }}
         aws-region: eu-central-1
     - run: |
-        AWS_VERSION_LABEL=${{ needs.terraform.outputs.app_name }}-${{ github.run_number }}
+        AWS_VERSION_LABEL=${{ env.APP_NAME }}-${{ github.run_number }}
 
         echo "Uploading Source bundle to S3"
         S3_KEY="$AWS_VERSION_LABEL.zip"
-        echo ${{ needs.terraform.outputs.aws_region}}
-        echo ${{ needs.terraform.outputs.app_name }}
-        echo ${{ needs.terraform.outputs.env_app }}
-        aws s3 cp .net-app.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ needs.terraform.outputs.aws_region}}
+
+        aws s3 cp .net-app.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ env.AWS_DEFAULT_REGION }}
 
         echo "Creating Elastic Beanstalk version"
-        aws elasticbeanstalk create-application-version --application-name ${{ needs.terraform.outputs.app_name }} --version-label $AWS_VERSION_LABEL --region ${{ needs.terraform.outputs.aws_region }} --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${S3_KEY} --auto-create-application
+        aws elasticbeanstalk create-application-version --application-name ${{ env.APP_NAME }} --version-label $AWS_VERSION_LABEL --region ${{ env.APP_NAME }} --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${S3_KEY} --auto-create-application
 
   deploy:
     name: "Deploy via EB CLI"
