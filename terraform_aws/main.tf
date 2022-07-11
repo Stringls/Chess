@@ -87,6 +87,8 @@ module "eb" {
   env        = var.env
   repo_url   = var.repo_url
 
+  SSH_PUBLIC_KEY = var.SSH_PUBLIC_KEY
+
   # rds output
   db_instance_password = var.sql_admin_password
   db_instance_address = module.rds.db_instance_address

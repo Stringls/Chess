@@ -45,3 +45,9 @@ variable "sql_admin_password" {
   description = "The Master Password"
   sensitive   = true
 }
+
+variable "SSH_PUBLIC_KEY" {
+  type = string
+  description = "The SSH Public Key"
+  sensitive = true
+}
