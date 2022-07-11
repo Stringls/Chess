@@ -148,9 +148,11 @@ jobs:
     - run: |
         AWS_VERSION_LABEL=${{ env.APP_NAME }}-${{ github.run_number }}
 
-        echo "Uploading Source bundle to S3"
+        echo "Creating Source Bundle"
+        zip -r ${{ env.APP_NAME }}.zip ${{ env.DOTNET_ROOT }}/myapp
         S3_KEY="$AWS_VERSION_LABEL.zip"
 
+        echo "Uploading Source bundle to S3"
         aws s3 cp .net-app.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ env.AWS_DEFAULT_REGION }}
 
         echo "Creating Elastic Beanstalk version"
