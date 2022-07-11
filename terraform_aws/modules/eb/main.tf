@@ -1,8 +1,8 @@
 # key pair
-# resource "aws_key_pair" "app" {
-#   key_name   = "app-prod"
-#   public_key = file("${var.SSH_PUBLIC_KEY}")
-# }
+resource "aws_key_pair" "app" {
+  key_name   = "app-prod"
+  public_key = "${var.SSH_PUBLIC_KEY}"
+}
 
 # security group
 resource "aws_security_group" "eb_app_prod" {
@@ -61,11 +61,12 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
     value     = aws_security_group.eb_app_prod.id
   }
 
-  # setting {
-  #   namespace = "aws:autoscaling:launchconfiguration"
-  #   name      = "EC2KeyName"
-  #   value     = aws_key_pair.app.id
-  # }
+  setting {
+    namespace = "aws:autoscaling:launchconfiguration"
+    name      = "EC2KeyName"
+    value     = aws_key_pair.app.id
+    resource = ""
+  }
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"

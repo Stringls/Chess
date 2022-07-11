@@ -1,9 +1,8 @@
 # You must first create a public key and a private key by execution ssh-keygen command
-# variable "SSH_PUBLIC_KEY" {
-#   type        = string
-#   default     = "~/.ssh/id_rsa.pub"
-#   description = "SSH Public Key to connect to EC2 instance"
-# }
+variable "SSH_PUBLIC_KEY" {
+  type        = string
+  description = "SSH Public Key to connect to EC2 instance"
+}
 
 variable "vpc_id" {
   type        = string
