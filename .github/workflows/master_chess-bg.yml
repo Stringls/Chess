@@ -103,6 +103,7 @@ jobs:
 
   trigger:
     name: "Trigger CodePipeline"
+    needs: terraform
     runs-on: ubuntu-latest
     steps:
     - name: Trigger AWS CodePipeline
