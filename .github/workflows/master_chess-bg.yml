@@ -132,11 +132,11 @@ jobs:
       run: dotnet publish --no-restore --no-build -c Release -o ${{ env.DOTNET_ROOT }}/myapp
       working-directory: src
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v2
-      with:
-        name: .net-app
-        path: ${{ env.DOTNET_ROOT }}/myapp
+    # - name: Upload artifact for deployment job
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: .net-app
+    #     path: ${{ env.DOTNET_ROOT }}/myapp
 
     - name: Configure AWS Creds
       uses: aws-actions/configure-aws-credentials@v1
@@ -153,7 +153,7 @@ jobs:
         S3_KEY="$AWS_VERSION_LABEL.zip"
 
         echo "Uploading Source bundle to S3"
-        aws s3 cp .net-app.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ env.AWS_DEFAULT_REGION }}
+        aws s3 cp ${{ env.APP_NAME }}.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ env.AWS_DEFAULT_REGION }}
 
         echo "Creating Elastic Beanstalk version"
         aws elasticbeanstalk create-application-version --application-name ${{ env.APP_NAME }} --version-label $AWS_VERSION_LABEL --region ${{ env.APP_NAME }} --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${S3_KEY} --auto-create-application
