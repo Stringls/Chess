@@ -1,6 +1,18 @@
 branch-defaults:
   default:
-    environment: null
+    environment: chess-app-prod
     group_suffix: null
+environment-defaults:
+  chess-app-prod:
+    branch: null
+    repository: null
 global:
+  application_name: chess-app
+  default_platform: .NET Core running on 64bit Amazon Linux 2
+  default_region: eu-central-1
+  instance_profile: null
+  platform_name: null
+  platform_version: null
   profile: eb-cli
+  sc: null
+  workspace_type: Application
