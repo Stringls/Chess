@@ -149,14 +149,15 @@ jobs:
         AWS_VERSION_LABEL=${{ env.APP_NAME }}-${{ github.run_number }}
 
         echo "Creating Source Bundle"
-        zip -r ${{ env.APP_NAME }}.zip ${{ env.DOTNET_ROOT }}/myapp
+        cd ${{ env.DOTNET_ROOT }}/myapp
+        zip -r ${{ env.APP_NAME }}.zip .
         S3_KEY="$AWS_VERSION_LABEL.zip"
 
         echo "Uploading Source bundle to S3"
         aws s3 cp ${{ env.APP_NAME }}.zip s3://${{ env.S3_BUCKET }}/${S3_KEY} --region ${{ env.AWS_DEFAULT_REGION }}
 
         echo "Creating Elastic Beanstalk version"
-        aws elasticbeanstalk create-application-version --application-name ${{ env.APP_NAME }} --version-label $AWS_VERSION_LABEL --region ${{ env.APP_NAME }} --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${S3_KEY} --auto-create-application
+        aws elasticbeanstalk create-application-version --application-name ${{ env.APP_NAME }} --version-label $AWS_VERSION_LABEL --region ${{ env.AWS_DEFAULT_REGION }} --source-bundle S3Bucket=${{ env.S3_BUCKET }},S3Key=${S3_KEY} --auto-create-application
 
   deploy:
     name: "Deploy via EB CLI"
@@ -174,10 +175,10 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ needs.jobs.outputs.aws_region }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
     
     - run: |
-        AWS_VERSION_LABEL=${{ needs.jobs.outputs.app_name }}-${{ github.run_number }}
+        AWS_VERSION_LABEL=${{ env.APP_NAME }}-${{ github.run_number }}
 
         echo "Installing Elastic Beanstalk Cli"
         python -m pip install --upgrade pip
@@ -185,6 +186,6 @@ jobs:
         eb --version
 
         echo "Deploy init"
-        eb init -i ${{ needs.terraform.outputs.app_name }} -p ${{ env.AWS_PLATFORM }} -k ${{ secrets.SSH_PUBLIC_KEY }} --region ${{ needs.terraform.outputs.aws_region }}
-        eb deploy ${{ needs.terraform.outputs.app_name }} --version ${AWS_VERSION_LABEL}
+        eb init -i ${{ env.APP_NAME }} -p ${{ env.AWS_PLATFORM }} -k ${{ secrets.SSH_PUBLIC_KEY }} --region ${{ env.AWS_DEFAULT_REGION }}
+        eb deploy ${{ env.APP_NAME }} --version ${AWS_VERSION_LABEL}
         echo "Deploy finished"
