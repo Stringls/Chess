@@ -28,34 +28,34 @@ variable "repo_url" {
 }
 
 variable "associate_public_ip_address" {
-  type        = string
-  default     = "False"
+  type        = bool
+  default     = true
   description = "Associate EB with public ip address"
 }
 
-variable "elb_scheme" {
-  type        = string
-  default     = "public"
-  description = "The ELB Scheme"
-}
+# variable "elb_scheme" {
+#   type        = string
+#   default     = "public"
+#   description = "The ELB Scheme"
+# }
 
-variable "cross_zone" {
-  type        = string
-  default     = "true"
-  description = " If cross-zone load balancing is disabled, each load balancer node distributes requests evenly across the registered instances in its Availability Zone only"
-}
+# variable "cross_zone" {
+#   type        = string
+#   default     = "true"
+#   description = " If cross-zone load balancing is disabled, each load balancer node distributes requests evenly across the registered instances in its Availability Zone only"
+# }
 
-variable "batch_size" {
-  type        = string
-  default     = "30"
-  description = "The number of records to send to the function in each batch"
-}
+# variable "batch_size" {
+#   type        = string
+#   default     = "30"
+#   description = "The number of records to send to the function in each batch"
+# }
 
-variable "banch_size_type" {
-  type        = string
-  default     = "Percentage"
-  description = "The Batch Size type"
-}
+# variable "batch_size_type" {
+#   type        = string
+#   default     = "Percentage"
+#   description = "The Batch Size type"
+# }
 
 variable "availability_zones" {
   type        = string
@@ -90,15 +90,15 @@ variable "db_instance_password" {
   description = "The DB Master's password"
 }
 
-variable "subnet_private1_id" {
-  type        = string
-  description = "The PRIVATE Subnet 1 Id"
-}
+# variable "subnet_private1_id" {
+#   type        = string
+#   description = "The PRIVATE Subnet 1 Id"
+# }
 
-variable "subnet_private2_id" {
-  type        = string
-  description = "The PRIVATE Subnet 2 Id"
-}
+# variable "subnet_private2_id" {
+#   type        = string
+#   description = "The PRIVATE Subnet 2 Id"
+# }
 
 variable "public_subnet1_id" {
   type        = string

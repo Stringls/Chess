@@ -46,7 +46,7 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
   setting {
     namespace = "aws:ec2:vpc"
     name      = "Subnets"
-    value     = "${var.subnet_private1_id},${var.subnet_private2_id}"
+    value     = "${var.public_subnet1_id},${var.public_subnet2_id}"
   }
 
   setting {
@@ -89,39 +89,39 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
     resource = ""
   }
 
-  setting {
-    namespace = "aws:ec2:vpc"
-    name      = "ELBScheme"
-    value     = var.elb_scheme
-    resource = ""
-  }
+  # setting {
+  #   namespace = "aws:ec2:vpc"
+  #   name      = "ELBScheme"
+  #   value     = var.elb_scheme
+  #   resource = ""
+  # }
 
-  setting {
-    namespace = "aws:ec2:vpc"
-    name      = "ELBSubnets"
-    value     = "${var.public_subnet1_id},${var.public_subnet2_id}"
-    resource = ""
-  }
+  # setting {
+  #   namespace = "aws:ec2:vpc"
+  #   name      = "ELBSubnets"
+  #   value     = "${var.public_subnet1_id},${var.public_subnet2_id}"
+  #   resource = ""
+  # }
 
-  setting {
-    namespace = "aws:elb:loadbalancer"
-    name      = "CrossZone"
-    value     = var.cross_zone
-    resource = ""
-  }
+  # setting {
+  #   namespace = "aws:elb:loadbalancer"
+  #   name      = "CrossZone"
+  #   value     = var.cross_zone
+  #   resource = ""
+  # }
 
-  setting {
-    namespace = "aws:elasticbeanstalk:command"
-    name      = "BatchSize"
-    value     = var.batch_size
-    resource = ""
-  }
-  setting {
-    namespace = "aws:elasticbeanstalk:command"
-    name      = "BatchSizeType"
-    value     = var.banch_size_type
-    resource = ""
-  }
+  # setting {
+  #   namespace = "aws:elasticbeanstalk:command"
+  #   name      = "BatchSize"
+  #   value     = var.batch_size
+  #   resource = ""
+  # }
+  # setting {
+  #   namespace = "aws:elasticbeanstalk:command"
+  #   name      = "BatchSizeType"
+  #   value     = var.banch_size_type
+  #   resource = ""
+  # }
 
   setting {
     namespace = "aws:autoscaling:asg"
