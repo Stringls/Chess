@@ -24,3 +24,4 @@ artifacts:
   base-directory: $CODEBUILD_SRC_DIR/src/build_output
   files:
     - ./**/*
+    - $CODEBUILD_SRC_DIR/.ebextensions
