@@ -3,17 +3,17 @@ resource "aws_iam_role" "app-ec2-role" {
   name               = var.iam_ec2_role
   assume_role_policy = <<EOF
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": "sts:AssumeRole",
-            "Principal": {
-                "Service": "ec2.amazonaws.com"
-            },
-            "Effect": "Allow",
-            "Sid": ""
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Principal": {
+            "Service": "ec2.amazonaws.com"
+        },
+        "Effect": "Allow",
+        "Sid": ""
+      }
+  ]
 }
 EOF
 }
@@ -46,6 +46,29 @@ resource "aws_iam_role" "elasticbeanstalk-service-role" {
 }
 EOF
 }
+
+# resource "aws_iam_role" "cloudwatch-logs-service-role" {
+#   name = var.iam_cloudwatch_logs
+#   assume_role_policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#         "logs:CreateLogStream",
+#         "logs:PutLogEvents",
+#         "logs:DescribeLogGroups",
+#         "logs:DescribeLogStreams"
+#       ],
+#       "Resource": [
+#         "*"
+#       ]
+#     }
+#   ]
+# }
+# EOF
+# }
 
 # policies
 resource "aws_iam_policy_attachment" "app-attach1" {
