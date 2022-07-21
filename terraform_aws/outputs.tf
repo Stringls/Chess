@@ -7,5 +7,5 @@ output "env-app" {
 }
 
 output "aws-region" {
-  value = "${var.aws_region}"
+  value = var.aws_region
 }

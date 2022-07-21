@@ -16,11 +16,11 @@ variable "aws_region" {
   default     = "eu-central-1"
 }
 
-variable "profile" {
-  type = string
-  description = "The Profile with credentials"
-  default = "~/Chess/.aws/credential"
-}
+# variable "profile" {
+#   type = string
+#   description = "The Profile with credentials"
+#   default = "~/Chess/.aws/credential"
+# }
 
 variable "repo_url" {
   type        = string
@@ -46,8 +46,8 @@ variable "sql_admin_password" {
   sensitive   = true
 }
 
-variable "SSH_PUBLIC_KEY" {
-  type = string
-  description = "The SSH Public Key"
-  sensitive = true
-}
+# variable "SSH_PUBLIC_KEY" {
+#   type = string
+#   description = "The SSH Public Key"
+#   sensitive = true
+# }
