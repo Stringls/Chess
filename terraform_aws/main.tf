@@ -10,11 +10,11 @@ terraform {
     organization = "stringls"
 
     workspaces {
-      name = "gh-action-aws-demo"
+      name = "gh-actions-aws-demo"
     }
   }
 
-#
+  #
   # backend "s3" {
   #   encrypt = true
   #   bucket = "tfstate-s3-bucket"
@@ -26,7 +26,7 @@ terraform {
 provider "aws" {
   # access_key = var.AWS_ACCESS_KEY_ID
   # secret_key = var.AWS_SECRET_ACCESS_KEY
-  region     = "${var.aws_region}"
+  region = var.aws_region
 }
 
 ######################################################
@@ -87,23 +87,49 @@ module "eb" {
   env        = var.env
   repo_url   = var.repo_url
 
-  SSH_PUBLIC_KEY = var.SSH_PUBLIC_KEY
+  # SSH_PUBLIC_KEY = var.SSH_PUBLIC_KEY
 
   # rds output
   db_instance_password = var.sql_admin_password
-  db_instance_address = module.rds.db_instance_address
+  db_instance_address  = module.rds.db_instance_address
   db_instance_username = module.rds.db_instance_username
 
   # vpc output
-  vpc_id             = module.vpc.vpc_id
-  subnet_private1_id = module.vpc.subnet_1_id
-  subnet_private2_id = module.vpc.subnet_2_id
-  public_subnet1_id  = module.vpc.public_subnet1_id
-  public_subnet2_id  = module.vpc.public_subnet2_id
+  vpc_id = module.vpc.vpc_id
+  # subnet_private1_id = module.vpc.subnet_1_id
+  # subnet_private2_id = module.vpc.subnet_2_id
+  public_subnet1_id = module.vpc.public_subnet1_id
+  public_subnet2_id = module.vpc.public_subnet2_id
 
   # iam output
   eb_service_role = module.iam.eb_service_role
   ec2_role        = module.iam.ec2_role
+}
+
+######################################################
+# AWS KINESIS STREAM FOR CLOUDWATCH LOGS
+######################################################
+
+# module "kinesis" {
+#   source = "./modules/kinesis"
+
+#   identifier = var.identifier
+#   env        = var.env
+#   repo_url   = var.repo_url
+# }
+
+######################################################
+# CLOUDWATCH LOGS FOR EB APP
+######################################################
+
+module "cloudwatch" {
+  source = "./modules/cloudwatch"
+
+  identifier = var.identifier
+
+  # iam_for_cloudwatch_arn     = module.iam.ec2_instance_arn
+  # kinesis_for_cloudwatch_arn = module.kinesis.kinesis_arn
+  dashboard_name = "Test-DashBoard"
 }
 
 ######################################################
