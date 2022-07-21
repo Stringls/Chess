@@ -1,8 +1,9 @@
 # You must first create a public key and a private key by execution ssh-keygen command
-variable "SSH_PUBLIC_KEY" {
-  type        = string
-  description = "SSH Public Key to connect to EC2 instance"
-}
+# variable "SSH_PUBLIC_KEY" {
+#   type        = string
+#   description = "SSH Public Key to connect to EC2 instance"
+#   default = "~/.ssh/id_rsa.pub"
+# }
 
 variable "vpc_id" {
   type        = string
@@ -130,4 +131,46 @@ variable "solution_stack_name" {
   type        = string
   description = "The Solution Stack Name (The platform on which the server will run)"
   default     = "64bit Amazon Linux 2 v2.3.3 running .NET Core"
+}
+
+variable "enable_log_publication_control" {
+  type        = bool
+  default     = false
+  description = "Copy the log files for your application's Amazon EC2 instances to the Amazon S3 bucket associated with your application"
+}
+
+variable "enable_stream_logs" {
+  type        = bool
+  default     = false
+  description = "Whether to create groups in CloudWatch Logs for proxy and deployment logs, and stream logs from each instance in your environment"
+}
+
+variable "logs_delete_on_terminate" {
+  type        = bool
+  default     = true
+  description = "Whether to delete the log groups when the environment is terminated. If false, the logs are kept RetentionInDays days"
+}
+
+variable "logs_retention_in_days" {
+  type        = number
+  default     = 7
+  description = "The number of days to keep log events before they expire."
+}
+
+variable "health_streaming_enabled" {
+  type        = bool
+  default     = false
+  description = "For environments with enhanced health reporting enabled, whether to create a group in CloudWatch Logs for environment health and archive Elastic Beanstalk environment health data. For information about enabling enhanced health, see aws:elasticbeanstalk:healthreporting:system."
+}
+
+variable "health_streaming_delete_on_terminate" {
+  type        = bool
+  default     = true
+  description = "Whether to delete the log group when the environment is terminated. If false, the health data is kept RetentionInDays days."
+}
+
+variable "health_streaming_retention_in_days" {
+  type        = number
+  default     = 7
+  description = "The number of days to keep the archived health data before it expires."
 }

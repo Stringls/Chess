@@ -1,8 +1,8 @@
 # key pair
-resource "aws_key_pair" "app" {
-  key_name   = "app-prod"
-  public_key = "${var.SSH_PUBLIC_KEY}"
-}
+# resource "aws_key_pair" "app" {
+#   key_name   = "app-prod"
+#   public_key = "${file("${var.SSH_PUBLIC_KEY}")}"
+# }
 
 # security group
 resource "aws_security_group" "eb_app_prod" {
@@ -41,52 +41,56 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
     namespace = "aws:ec2:vpc"
     name      = "VPCId"
     value     = var.vpc_id
+    resource = ""
   }
 
   setting {
     namespace = "aws:ec2:vpc"
     name      = "Subnets"
     value     = "${var.public_subnet1_id},${var.public_subnet2_id}"
+    resource = ""
   }
 
   setting {
     namespace = "aws:ec2:vpc"
     name      = "AssociatePublicIpAddress"
     value     = var.associate_public_ip_address
+    resource = ""
   }
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "SecurityGroups"
     value     = aws_security_group.eb_app_prod.id
-  }
-
-  setting {
-    namespace = "aws:autoscaling:launchconfiguration"
-    name      = "EC2KeyName"
-    value     = aws_key_pair.app.id
     resource = ""
   }
+
+  # setting {
+  #   namespace = "aws:autoscaling:launchconfiguration"
+  #   name      = "EC2KeyName"
+  #   value     = aws_key_pair.app.id
+  #   resource = ""
+  # }
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "InstanceType"
     value     = var.eb_instance_type
-    resource = ""
+    resource  = ""
   }
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "IamInstanceProfile"
     value     = var.ec2_role
-    resource = ""
+    resource  = ""
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "ServiceRole"
     value     = var.eb_service_role
-    resource = ""
+    resource  = ""
   }
 
   # setting {
@@ -127,34 +131,87 @@ resource "aws_elastic_beanstalk_environment" "app-prod" {
     namespace = "aws:autoscaling:asg"
     name      = "Availability Zones"
     value     = var.availability_zones
-    resource = ""
+    resource  = ""
   }
 
   setting {
     namespace = "aws:autoscaling:asg"
     name      = "MinSize"
     value     = var.min_size
-    resource = ""
+    resource  = ""
   }
 
   setting {
     namespace = "aws:autoscaling:updatepolicy:rollingupdate"
     name      = "RollingUpdateType"
     value     = var.rolling_update_type
+    resource  = ""
+  }
+
+  ##============================  LOGGING  ==================================##
+
+  setting {
+    namespace = "aws:elasticbeanstalk:hostmanager"
+    name = "LogPublicationControl"
+    value = var.enable_log_publication_control ? "true" : "false"
     resource = ""
   }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+    name = "StreamLogs"
+    value = var.enable_stream_logs ? "true" : "false"
+    resource = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+    name = "DeleteOnTerminate"
+    value = var.logs_delete_on_terminate ? "true" : "false"
+    resource = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+    name = "RetentionInDays"
+    value = var.logs_retention_in_days
+    resource = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs:health"
+    name = "HealthStreamingEnabled"
+    value = var.health_streaming_enabled ? "true" : "false"
+    resource = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs:health"
+    name = "DeleteOnTerminate"
+    value = var.health_streaming_delete_on_terminate ? "true" : "false"
+    resource = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs:health"
+    name = "RetentionInDays"
+    value = var.health_streaming_retention_in_days
+    resource = ""
+  }
+
+##============================ ENV VARIABLES ===============================##
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "ASPNETCORE_ENVIRONMENT"
     value     = "Development"
-    resource = ""
+    resource  = ""
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "CONNECTION_STRING"
     value     = "Server=${var.db_instance_address},1433;Database=Chess;User Id=${var.db_instance_username};Password=${var.db_instance_password};"
-    resource = ""
+    resource  = ""
   }
 }
