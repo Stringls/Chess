@@ -10,10 +10,10 @@ variables:
   buildConfiguration: 'Release'
   workDir: '$(System.DefaultWorkingDirectory)'
 
-#trigger:
-#  branches:
-#    include:
-#    - main
+trigger:
+  branches:
+    include:
+    - main
 
 jobs:
 
